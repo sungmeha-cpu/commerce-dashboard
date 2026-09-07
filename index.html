@@ -118,10 +118,53 @@
     .header { padding:16px; }
     .container { padding:12px; }
   }
+
+  /* Login Overlay */
+  .login-overlay {
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background:linear-gradient(135deg, #1b5e20 0%, #388e3c 50%, #2e7d32 100%);
+    display:flex; align-items:center; justify-content:center;
+    z-index:9999;
+  }
+  .login-box {
+    background:#fff; border-radius:16px; padding:48px 40px; width:360px;
+    box-shadow:0 20px 60px rgba(0,0,0,.3); text-align:center;
+  }
+  .login-box h2 { font-size:22px; font-weight:800; color:#1b5e20; margin-bottom:6px; }
+  .login-box .login-sub { font-size:13px; color:var(--text-light); margin-bottom:28px; }
+  .login-box input {
+    width:100%; padding:12px 16px; border:2px solid var(--border); border-radius:10px;
+    font-size:15px; text-align:center; outline:none; letter-spacing:4px;
+    transition:border-color .2s;
+  }
+  .login-box input:focus { border-color:var(--primary); }
+  .login-box button {
+    width:100%; margin-top:14px; padding:12px; border:none; border-radius:10px;
+    background:linear-gradient(135deg, #2e7d32, #388e3c); color:#fff;
+    font-size:15px; font-weight:700; cursor:pointer; transition:opacity .2s;
+  }
+  .login-box button:hover { opacity:.9; }
+  .login-error { color:#dc2626; font-size:13px; margin-top:10px; min-height:20px; }
+  .login-logo { font-size:40px; margin-bottom:12px; }
+
+  .dashboard-content { display:none; }
 </style>
 </head>
 <body>
 
+<!-- Login Overlay -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <div class="login-logo">&#127807;</div>
+    <h2>커머스실 매출 대시보드</h2>
+    <p class="login-sub">접근 권한이 필요합니다</p>
+    <input type="password" id="loginPw" placeholder="비밀번호 입력" maxlength="20" autofocus>
+    <button id="loginBtn">로그인</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<div class="dashboard-content" id="dashboardContent">
 <div class="header">
   <div>
     <h1>2026 커머스실 채널별 매출 대시보드</h1>
@@ -180,10 +223,47 @@
   </div>
 </div>
 
+</div><!-- end dashboard-content -->
+
 <script>
+// ===== AUTH =====
+const PW_HASH = '85d6385b945c0d602103db39b0b654b2af93b5127938e26a959c123f0789b948';
+
+async function sha256(msg) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function tryLogin() {
+  const pw = document.getElementById('loginPw').value;
+  if (!pw) return;
+  const hash = await sha256(pw);
+  if (hash === PW_HASH) {
+    sessionStorage.setItem('cle_dash_auth', '1');
+    showDashboard();
+  } else {
+    document.getElementById('loginError').textContent = '비밀번호가 올바르지 않습니다';
+    document.getElementById('loginPw').value = '';
+    document.getElementById('loginPw').focus();
+  }
+}
+
+function showDashboard() {
+  document.getElementById('loginOverlay').style.display = 'none';
+  document.getElementById('dashboardContent').style.display = 'block';
+}
+
+// Check session
+if (sessionStorage.getItem('cle_dash_auth') === '1') {
+  showDashboard();
+}
+
+document.getElementById('loginBtn').addEventListener('click', tryLogin);
+document.getElementById('loginPw').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
 // ===== DATA =====
 const PLAN = [
-  {type:"온라인",group:"자사몰",channel:"자사몰",manager:"엄효진",months:[1588478300,1500565679,1829372346,1918490000,1973766300,1992355951,1969251613,2088199286,2207359356,2505367095,2379019774,2547274300],total:24499500000},
+  {type:"온라인",group:"자사몰",channel:"자사몰",manager:"엄효진/신예지",months:[1588478300,1500565679,1829372346,1918490000,1973766300,1992355951,1969251613,2088199286,2207359356,2505367095,2379019774,2547274300],total:24499500000},
   {type:"온라인",group:"입점몰",channel:"쿠팡",manager:"한승호",months:[105902846.95,108729360.6,115242651.4,136061462.6,154572766.45,181213398.1,192126609.7,173166279.9,166431431.7,170259032.9,182546464.35,177009429.15],total:1863261733.8},
   {type:"온라인",group:"입점몰",channel:"SSG",manager:"이보라",months:[5543523.07,5948624.04,6766176.76,7217235.36,7538184.43,7964226.54,9180135.98,9794418.66,10495428.78,10667268.86,10019764.29,10740628.61],total:101875615.38},
   {type:"온라인",group:"입점몰",channel:"파인그룹",manager:"이보라",months:[2000000,2000000,2000000,2000000,2000000,2000000,2000000,2000000,2000000,2000000,2000000,2000000],total:24000000},
@@ -217,7 +297,7 @@ const PLAN = [
 ];
 
 const ACTUAL = [
-  {type:"온라인",group:"자사몰",channel:"자사몰",manager:"엄효진",months:[1581807068,1506964676,1834118963,1839964215,1710778783,1564070668,1847706960,0,0,0,0,0],total:11885411333},
+  {type:"온라인",group:"자사몰",channel:"자사몰",manager:"엄효진/신예지",months:[1581807068,1506964676,1834118963,1839964215,1710778783,1564070668,1847706960,0,0,0,0,0],total:11885411333},
   {type:"온라인",group:"입점몰",channel:"쿠팡",manager:"한승호",months:[82517692,112144514,125005779,129036713,124713955,119343320,174492957,0,0,0,0,0],total:867254930},
   {type:"온라인",group:"입점몰",channel:"SSG",manager:"이보라",months:[0,0,0,0,0,0,0,0,0,0,0,0],total:0},
   {type:"온라인",group:"입점몰",channel:"파인그룹",manager:"이보라",months:[0,0,0,0,0,0,0,0,0,0,0,0],total:0},
