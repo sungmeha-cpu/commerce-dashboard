@@ -44,7 +44,7 @@
   .container { max-width:1440px; margin:0 auto; padding:20px 24px; }
 
   /* KPI Cards */
-  .kpi-row { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:16px; margin-bottom:24px; }
+  .kpi-row { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:16px; margin-bottom:24px; }
   .kpi-card {
     background:var(--card); border-radius:12px; padding:20px;
     box-shadow:0 1px 3px rgba(0,0,0,.06);
@@ -72,13 +72,13 @@
     box-shadow:0 1px 3px rgba(0,0,0,.06); margin-bottom:24px; overflow-x:auto;
   }
   .table-card h3 { font-size:14px; font-weight:700; margin-bottom:14px; }
-  table { width:100%; border-collapse:collapse; font-size:13px; }
-  th { background:#f8fafc; padding:10px 12px; text-align:right; font-weight:600; color:var(--text-light); border-bottom:2px solid var(--border); white-space:nowrap; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  th { background:#f8fafc; padding:10px 10px; text-align:right; font-weight:600; color:var(--text-light); border-bottom:2px solid var(--border); white-space:nowrap; }
   th:nth-child(-n+4) { text-align:left; }
-  td { padding:9px 12px; border-bottom:1px solid var(--border); text-align:right; white-space:nowrap; }
+  td { padding:8px 10px; border-bottom:1px solid var(--border); text-align:right; white-space:nowrap; }
   td:nth-child(-n+4) { text-align:left; }
   tr:hover td { background:#f8fafc; }
-  .progress-cell { min-width:160px; }
+  .progress-cell { min-width:140px; }
   .progress-bar-bg { background:#e2e8f0; border-radius:6px; height:20px; position:relative; overflow:hidden; }
   .progress-bar-fill { height:100%; border-radius:6px; transition:width .3s; display:flex; align-items:center; justify-content:flex-end; padding-right:6px; }
   .progress-bar-fill span { font-size:11px; font-weight:700; color:#fff; text-shadow:0 0 2px rgba(0,0,0,.3); }
@@ -108,6 +108,10 @@
     font-weight:700; font-size:14px; margin-bottom:8px;
     display:flex; justify-content:space-between; align-items:center;
   }
+
+  .yoy-up { color:#2e7d32; font-weight:700; }
+  .yoy-down { color:#dc2626; font-weight:700; }
+  .yoy-na { color:#94a3b8; }
 
   @media (max-width:900px) {
     .chart-row { grid-template-columns:1fr; }
@@ -168,9 +172,9 @@
 <div class="header">
   <div>
     <h1>2026 커머스실 채널별 매출 대시보드</h1>
-    <div class="date">사업계획 vs 실적 (결제기준) | 최종 업데이트: 2026.09.04</div>
+    <div class="date">사업계획 vs 실적 (결제기준) | 최종 업데이트: 2026.09.08</div>
   </div>
-  <div style="font-size:13px;opacity:.7;">실적 반영: 1월~7월</div>
+  <div style="font-size:13px;opacity:.7;">실적 반영: 1월~8월</div>
 </div>
 
 <div class="filters">
@@ -190,7 +194,7 @@
   <div class="filter-group">
     <label>기준월</label>
     <select id="filterMonth">
-      <option value="ytd">YTD (1~7월)</option>
+      <option value="ytd">YTD (1~8월)</option>
       <option value="0">1월</option>
       <option value="1">2월</option>
       <option value="2">3월</option>
@@ -198,6 +202,7 @@
       <option value="4">5월</option>
       <option value="5">6월</option>
       <option value="6">7월</option>
+      <option value="7">8월</option>
     </select>
   </div>
 </div>
@@ -205,7 +210,7 @@
 <div class="container">
   <div class="kpi-row" id="kpiRow"></div>
   <div class="chart-row">
-    <div class="chart-card"><h3>월별 목표 vs 실적 추이</h3><canvas id="chartMonthly"></canvas></div>
+    <div class="chart-card"><h3>월별 목표 vs 실적 추이 (2025 vs 2026)</h3><canvas id="chartMonthly"></canvas></div>
     <div class="chart-card"><h3>채널 유형별 달성률</h3><canvas id="chartType"></canvas></div>
   </div>
   <div class="chart-row">
@@ -253,7 +258,6 @@ function showDashboard() {
   document.getElementById('dashboardContent').style.display = 'block';
 }
 
-// Check session
 if (sessionStorage.getItem('cle_dash_auth') === '1') {
   showDashboard();
 }
@@ -265,14 +269,13 @@ document.getElementById('loginPw').addEventListener('keydown', e => { if (e.key 
 const PLAN = [
   {type:"온라인",group:"자사몰",channel:"자사몰",manager:"엄효진/신예지",months:[1588478300,1500565679,1829372346,1918490000,1973766300,1992355951,1969251613,2088199286,2207359356,2505367095,2379019774,2547274300],total:24499500000},
   {type:"온라인",group:"입점몰",channel:"쿠팡",manager:"한승호",months:[105902846.95,108729360.6,115242651.4,136061462.6,154572766.45,181213398.1,192126609.7,173166279.9,166431431.7,170259032.9,182546464.35,177009429.15],total:1863261733.8},
-  {type:"온라인",group:"입점몰",channel:"SSG",manager:"이보라",months:[5543523.07,5948624.04,6766176.76,7217235.36,7538184.43,7964226.54,9180135.98,9794418.66,10495428.78,10667268.86,10019764.29,10740628.61],total:101875615.38},
-  {type:"온라인",group:"입점몰",channel:"파인그룹",manager:"이보라",months:[2000000,2000000,2000000,2000000,2000000,2000000,2000000,2000000,2000000,2000000,2000000,2000000],total:24000000},
   {type:"온라인",group:"입점몰",channel:"네이버",manager:"이보라",months:[250689110.24,257533953.92,290776484.48,319116680.32,346017376.48,331482873.92,308358527.04,321384780.64,367475598.72,368460521.08,381105701.92,386686844.8],total:3929088453.56},
   {type:"온라인",group:"입점몰",channel:"보리보리",manager:"이보라",months:[19258185.04,19028992.32,23179414.08,23127882.88,25165475.44,24703812.32,25723345.92,26496466.84,30823430.24,30868150.88,32428114.32,32525028.88],total:313328299.16},
   {type:"온라인",group:"입점몰",channel:"현대이지웰",manager:"한승호",months:[1487046.26,1897248.08,2532353.52,2834470.72,2876368.86,3744215.36,4518336.48,4588837.32,4790857.56,4334537.72,4039528.58,4281257.22],total:41925057.68},
   {type:"온라인",group:"입점몰",channel:"키즈노트",manager:"이보라",months:[1487046.26,1897248.08,2532353.52,2834470.72,2876368.86,2728453.08,4418336.48,4588837.32,4790857.56,4334537.72,4039528.58,4281257.22],total:40809295.4},
-  {type:"온라인",group:"입점몰",channel:"카카오",manager:"이보라",months:[11514092.52,12754496.16,15764707.04,19528941.44,21192737.72,21306906.16,21536672.96,23877674.64,27981715.12,28669075.44,28079057.16,31562514.44],total:263768590.8},
+  {type:"온라인",group:"입점몰",channel:"카카오",manager:"한승호",months:[11514092.52,12754496.16,15764707.04,19528941.44,21192737.72,21306906.16,21536672.96,23877674.64,27981715.12,28669075.44,28079057.16,31562514.44],total:263768590.8},
   {type:"온라인",group:"입점몰",channel:"키디키디",manager:"이보라",months:[60767615.65,56443120.2,70080883.8,79536176.8,85990922.15,80271132.7,74295841.2,74722093.3,87277143.9,91486344.3,99448821.45,96703143.05],total:957023238.5},
+  {type:"온라인",group:"입점몰",channel:"기타매출",manager:"공통(배정)",months:[7543523.07,7948624.04,8766176.76,9217235.36,9538184.43,9964226.54,11180135.98,11794418.66,12495428.78,12667268.86,12019764.29,12740628.61],total:125875615.38},
   {type:"온라인",group:"입점몰",channel:"신규",manager:"공통(배정)",months:[13202846.95,27629360.6,45492651.4,52458530.4,59572766.45,61863398.1,67137523.6,77916279.9,73831431.7,84609032.9,77296464.35,84509429.15],total:725519715.5},
   {type:"오프라인",group:"갤러리아",channel:"광교",manager:"박지윤",months:[51600000,44240000,45920000,52433400,59663000,58536200,58500000,46650734,58840781.36,59110000,58704859.5,59063867.62],total:653262842.47},
   {type:"오프라인",group:"갤러리아",channel:"센터시티",manager:"박지윤",months:[30600000,26960000,24180000,31555600,31942000,35490800,31900000,32167156,39093854.24,39379809.46,35503239.66,35709245.08],total:394481704.44},
@@ -297,48 +300,79 @@ const PLAN = [
 ];
 
 const ACTUAL = [
-  {type:"온라인",group:"자사몰",channel:"자사몰",manager:"엄효진/신예지",months:[1581807068,1506964676,1834118963,1839964215,1710778783,1564070668,1847706960,0,0,0,0,0],total:11885411333},
-  {type:"온라인",group:"입점몰",channel:"쿠팡",manager:"한승호",months:[82517692,112144514,125005779,129036713,124713955,119343320,174492957,0,0,0,0,0],total:867254930},
-  {type:"온라인",group:"입점몰",channel:"SSG",manager:"이보라",months:[0,0,0,0,0,0,0,0,0,0,0,0],total:0},
-  {type:"온라인",group:"입점몰",channel:"파인그룹",manager:"이보라",months:[0,0,0,0,0,0,0,0,0,0,0,0],total:0},
-  {type:"온라인",group:"입점몰",channel:"네이버",manager:"이보라",months:[266937611,239143811,272446944,260905661,235318729,242836941,317865960,0,0,0,0,0],total:1835455657},
-  {type:"온라인",group:"입점몰",channel:"보리보리",manager:"이보라",months:[35639832,54491339,13869199,7619793,9617311,20358470,17686930,0,0,0,0,0],total:159282874},
-  {type:"온라인",group:"입점몰",channel:"현대이지웰",manager:"한승호",months:[1461739,1798453,1335237,2001740,4121578,1195060,1207137,0,0,0,0,0],total:13120944},
+  {type:"온라인",group:"자사몰",channel:"자사몰",manager:"엄효진/신예지",months:[1581807068,1506964676,1834118963,1839964215,1710778783,1564070668,1847706960,1647016006,0,0,0,0],total:13532427339},
+  {type:"온라인",group:"입점몰",channel:"쿠팡",manager:"한승호",months:[82517692,112144514,125005779,129036713,124713955,119343320,174492957,173933672,0,0,0,0],total:1041188602},
+  {type:"온라인",group:"입점몰",channel:"네이버",manager:"이보라",months:[266937611,239143811,272446944,260905661,235318729,242836941,317865960,287481127,0,0,0,0],total:2122936784},
+  {type:"온라인",group:"입점몰",channel:"보리보리",manager:"이보라",months:[35639832,54491339,13869199,7619793,9617311,20358470,17686930,11082527,0,0,0,0],total:170365401},
+  {type:"온라인",group:"입점몰",channel:"현대이지웰",manager:"한승호",months:[1461739,1798453,1335237,2001740,4121578,1195060,1207137,3653704,0,0,0,0],total:16774648},
   {type:"온라인",group:"입점몰",channel:"키즈노트",manager:"이보라",months:[325409,88936,108745,0,0,0,0,0,0,0,0,0],total:523090},
-  {type:"온라인",group:"입점몰",channel:"카카오",manager:"이보라",months:[8862060,612230,1634160,953917,195056,373214,168004,0,0,0,0,0],total:12798641},
-  {type:"온라인",group:"입점몰",channel:"키디키디",manager:"이보라",months:[143216636,95886787,74624090,65243727,84364545,97998000,85277090,0,0,0,0,0],total:646610875},
+  {type:"온라인",group:"입점몰",channel:"카카오",manager:"한승호",months:[8862060,612230,1634160,953917,195056,373214,168004,499090,0,0,0,0],total:13297731},
+  {type:"온라인",group:"입점몰",channel:"키디키디",manager:"이보라",months:[143216636,95886787,74624090,65243727,84364545,97998000,85277090,87012272,0,0,0,0],total:733623147},
+  {type:"온라인",group:"입점몰",channel:"기타매출",manager:"공통(배정)",months:[0,0,0,0,0,0,0,0,0,0,0,0],total:0},
   {type:"온라인",group:"입점몰",channel:"신규",manager:"공통(배정)",months:[0,0,0,0,0,0,0,0,0,0,0,0],total:0},
-  {type:"오프라인",group:"갤러리아",channel:"광교",manager:"박지윤",months:[34073969,55732904,54060311,50075743,66847940,49147651,79488077,0,0,0,0,0],total:389426595},
-  {type:"오프라인",group:"갤러리아",channel:"센터시티",manager:"박지윤",months:[31861477,40408182,38702444,43619563,45331683,36477991,46486462,0,0,0,0,0],total:282887802},
-  {type:"오프라인",group:"스타필드",channel:"위례",manager:"박지윤",months:[42644772,56047645,45155136,51102809,61570418,50510181,53940936,0,0,0,0,0],total:360971897},
-  {type:"오프라인",group:"스타필드",channel:"명지",manager:"박지윤",months:[33095309,46648163,43170327,49197063,45781127,39920518,54692327,0,0,0,0,0],total:312504834},
-  {type:"오프라인",group:"스타필드",channel:"수원",manager:"박지윤",months:[66270402,82682136,72144518,86355872,83537554,65942790,86182136,0,0,0,0,0],total:543115408},
-  {type:"오프라인",group:"스타필드",channel:"운정",manager:"박지윤",months:[68361927,76422245,87508554,78754645,105649200,96396100,103181081,0,0,0,0,0],total:616273752},
-  {type:"오프라인",group:"신세계",channel:"본점",manager:"박지윤",months:[15448794,29389598,28668280,25097704,25639120,20024943,23441229,0,0,0,0,0],total:167709668},
-  {type:"오프라인",group:"신세계",channel:"강남",manager:"박지윤",months:[27522375,37104386,39479014,35797235,39448140,34243873,33238100,0,0,0,0,0],total:246833123},
-  {type:"오프라인",group:"현대",channel:"목동",manager:"박지윤",months:[31902591,47361569,42982086,48168118,61500540,45825477,58689158,0,0,0,0,0],total:336429539},
-  {type:"오프라인",group:"롯데",channel:"중동",manager:"구성은",months:[48681600,58727200,54090680,46363440,60852014,48681612,61871920,0,0,0,0,0],total:379268466},
+  {type:"오프라인",group:"갤러리아",channel:"광교",manager:"박지윤",months:[34073969,55732904,54060311,50075743,66847940,49147651,79488077,40142233,0,0,0,0],total:429568828},
+  {type:"오프라인",group:"갤러리아",channel:"센터시티",manager:"박지윤",months:[31861477,40408182,38702444,43619563,45331683,36477991,46486462,38891518,0,0,0,0],total:321779320},
+  {type:"오프라인",group:"스타필드",channel:"위례",manager:"박지윤",months:[42644772,56047645,45155136,51102809,61570418,50510181,53940936,46276700,0,0,0,0],total:407248597},
+  {type:"오프라인",group:"스타필드",channel:"명지",manager:"박지윤",months:[33095309,46648163,43170327,49197063,45781127,39920518,54692327,40821709,0,0,0,0],total:353326543},
+  {type:"오프라인",group:"스타필드",channel:"수원",manager:"박지윤",months:[66270402,82682136,72144518,86355872,83537554,65942790,86182136,78356209,0,0,0,0],total:621471617},
+  {type:"오프라인",group:"스타필드",channel:"운정",manager:"박지윤",months:[68361927,76422245,87508554,78754645,105649200,96396100,103181081,106141754,0,0,0,0],total:722415506},
+  {type:"오프라인",group:"신세계",channel:"본점",manager:"박지윤",months:[15448794,29389598,28668280,25097704,25639120,20024943,23441229,22704325,0,0,0,0],total:190413993},
+  {type:"오프라인",group:"신세계",channel:"강남",manager:"박지윤",months:[27522375,37104386,39479014,35797235,39448140,34243873,33238100,33991220,0,0,0,0],total:280824343},
+  {type:"오프라인",group:"현대",channel:"목동",manager:"박지윤",months:[31902591,47361569,42982086,48168118,61500540,45825477,58689158,44915618,0,0,0,0],total:381345157},
+  {type:"오프라인",group:"롯데",channel:"중동",manager:"구성은",months:[48681600,58727200,54090680,46363440,60852014,48681612,61871920,54090700,0,0,0,0],total:433359166},
   {type:"오프라인",group:"롯데",channel:"관악",manager:"구성은",months:[17950672,0,0,0,0,0,0,0,0,0,0,0],total:17950672},
-  {type:"오프라인",group:"롯데",channel:"노원",manager:"구성은",months:[40827154,56719400,61910472,53526854,66542572,46551563,72958045,0,0,0,0,0],total:399036060},
-  {type:"오프라인",group:"롯데",channel:"대구",manager:"구성은",months:[67519600,91267018,71654381,77002281,79666381,66734827,108060927,0,0,0,0,0],total:561905415},
-  {type:"오프라인",group:"롯데",channel:"대전",manager:"구성은",months:[24445390,40891572,32799436,34707863,37516572,29033118,46422900,0,0,0,0,0],total:245816851},
-  {type:"오프라인",group:"롯데",channel:"동래",manager:"구성은",months:[20844600,30892400,28289100,26800200,32190400,22333500,33748000,0,0,0,0,0],total:195098200},
-  {type:"오프라인",group:"롯데",channel:"잠실",manager:"구성은",months:[69325118,107972890,104130509,98266836,112914654,113677618,112958272,0,0,0,0,0],total:719245897},
-  {type:"오프라인",group:"AK",channel:"광명",manager:"구성은",months:[24895827,39674300,39186281,31065663,42945263,29247354,40302772,0,0,0,0,0],total:247317460},
-  {type:"오프라인",group:"AK",channel:"기흥",manager:"구성은",months:[33595627,47095572,54285572,41748018,53573200,38888518,63504345,0,0,0,0,0],total:332690852},
+  {type:"오프라인",group:"롯데",channel:"노원",manager:"구성은",months:[40827154,56719400,61910472,53526854,66542572,46551563,72958045,53457436,0,0,0,0],total:452493496},
+  {type:"오프라인",group:"롯데",channel:"대구",manager:"구성은",months:[67519600,91267018,71654381,77002281,79666381,66734827,108060927,69400854,0,0,0,0],total:631306269},
+  {type:"오프라인",group:"롯데",channel:"대전",manager:"구성은",months:[24445390,40891572,32799436,34707863,37516572,29033118,46422900,21931009,0,0,0,0],total:267747860},
+  {type:"오프라인",group:"롯데",channel:"동래",manager:"구성은",months:[20844600,30892400,28289100,26800200,32190400,22333500,33748000,26303900,0,0,0,0],total:221402100},
+  {type:"오프라인",group:"롯데",channel:"잠실",manager:"구성은",months:[69325118,107972890,104130509,98266836,112914654,113677618,112958272,94993854,0,0,0,0],total:814239751},
+  {type:"오프라인",group:"AK",channel:"광명",manager:"구성은",months:[24895827,39674300,39186281,31065663,42945263,29247354,40302772,33411154,0,0,0,0],total:280728614},
+  {type:"오프라인",group:"AK",channel:"기흥",manager:"구성은",months:[33595627,47095572,54285572,41748018,53573200,38888518,63504345,38673354,0,0,0,0],total:371364206},
   {type:"오프라인",group:"신규",channel:"김포",manager:"공통(배정)",months:[0,0,0,35964836,0,0,0,0,0,0,0,0],total:35964836},
-  {type:"오프라인",group:"신규",channel:"검단",manager:"공통(배정)",months:[0,0,0,2908418,57626018,37871727,41226927,0,0,0,0,0],total:139633090},
-  {type:"오프라인",group:"신규",channel:"압구정",manager:"공통(배정)",months:[0,0,0,1347577,1704845,1672953,0,0,0,0,0,0],total:4725375},
+  {type:"오프라인",group:"신규",channel:"검단",manager:"박지윤",months:[0,0,0,2908418,57626018,37871727,41226927,35325218,0,0,0,0],total:174958308},
+  {type:"오프라인",group:"신규",channel:"압구정",manager:"박지윤",months:[0,0,0,1347577,1704845,1672953,1478923,1032709,0,0,0,0],total:7237007},
+  {type:"오프라인",group:"신규",channel:"동탄",manager:"구성은",months:[0,0,0,0,0,0,0,103030309,0,0,0,0],total:103030309},
+  {type:"오프라인",group:"신규",channel:"월계",manager:"박지윤",months:[0,0,0,0,0,0,0,18045000,0,0,0,0],total:18045000},
   {type:"해외",group:"수출",channel:"수출",manager:"김혜리",months:[57838939,22759531,24713172,118204279,96534518,0,148067994,0,0,0,0,0],total:468118433}
 ];
 
+// 2025년 실적 (전년 대비 YoY 비교용)
+const PREV_YEAR = {
+  "자사몰_자사몰":[1516996612,1846111132,1488748892,1619913604,1539152091,1639465464,1613042513,1547650079,1804130090,1766271425,1559620208,1813782902],
+  "입점몰_쿠팡":[71267259,66773010,67968166,78480053,111912691,95038519,125970582,118985031,117517482,125144479,108992361,111827790],
+  "입점몰_네이버":[367216690,163896554,194584463,174650672,266152072,252396618,206232363,478872972,301359481,257178018,284172609,262720130],
+  "입점몰_보리보리":[16599690,14756450,34471890,28124550,24525827,21562416,20754485,23627125,25814766,23334362,18879978,16741404],
+  "입점몰_현대이지웰":[1757955,3496104,1353448,3027327,3189499,2360547,2581551,4502912,2587918,1670197,753844,2534612],
+  "입점몰_키즈노트":[406700,1627882,1345182,1234991,935836,599591,9085782,3532136,1087855,486864,255872,577009],
+  "입점몰_카카오":[9769889,13066545,19692127,16823336,2084339,10458560,14019790,10430781,16747063,29751438,3203172,9793246],
+  "입점몰_키디키디":[87804909,81185218,41199290,55756290,72783109,82197400,67917972,49419545,109803145,91498363,78645636,103183000],
+  "입점몰_기타매출":[14819905,118564121,12657305,52455561,3849882,27726921,19208036,2375286,20630832,7994391,4936327,1574045],
+  "갤러리아_광교":[29659383,53803718,45409679,41754515,63213658,50111617,62058589,45763483,57784998,71271260,41596970,57367368],
+  "갤러리아_센터시티":[22546524,29327279,26119631,27826607,30782492,26849436,30601645,30508034,34122962,36999144,29867588,35262440],
+  "스타필드_위례":[37030045,62271918,38929472,39240536,61299181,48434863,53102581,39894227,42717718,50082781,36948818,61512700],
+  "스타필드_명지":[30036400,30211136,25771654,29321981,33895709,34106563,37201063,43755018,43948190,43206418,36659100,37869272],
+  "스타필드_수원":[62221009,91442018,67293636,61838118,79165845,69314336,73873381,68511518,69433745,82748490,61583654,79489218],
+  "신세계_본점":[19342943,31238555,33078062,25019382,32077067,25714300,26000437,21902043,28852375,31800243,17821231,18174907],
+  "신세계_강남":[0,0,43065108,24009555,34502886,31592490,34196788,27932964,30347629,38537131,30751001,31067857],
+  "롯데_중동":[50195759,50884054,36865700,30812800,46716036,39107618,70292996,79992250,82295390,73409000,57954300,59113591],
+  "롯데_관악":[23340609,32439516,17303627,18775018,24819145,22751600,22772418,18079318,20892645,22322218,21047554,19491845],
+  "롯데_노원":[27368081,38504936,30366800,34975854,51480909,40776945,46549736,35726081,44736663,64612390,44877400,54506336],
+  "롯데_대구":[62605890,75038345,56997281,58633336,76059245,72297409,91299063,77473572,94620000,101253918,71501972,102269927],
+  "롯데_대전":[19502763,23560154,24251254,22210881,33195209,23297736,29019609,23216300,45288500,42583190,28237227,35763390],
+  "롯데_동래":[25678500,29736000,18363100,23326100,34492450,29281700,29144300,27296500,35829200,35829200,25291200,35829200],
+  "롯데_잠실":[65186300,99943754,61243172,69631718,92814581,76052090,82736890,79857863,87515381,93380263,69816254,116434490],
+  "AK_광명":[29868245,38772536,31498545,28071727,34327254,30250509,39959290,31937081,31753827,42938927,26300072,35181200],
+  "AK_기흥":[40856754,58921881,33020372,32082618,46271554,45622454,51646690,38717272,52778854,53159900,39326872,52778854],
+  "수출_수출":[115276011,0,60422736,20340058,115082050,0,21246105,58858398,54876799,54961740,80844479,0]
+};
+
 const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-const ACTUAL_MONTHS = 7; // 1~7월 실적 존재
+const ACTUAL_MONTHS = 8;
 
 // ===== UTILITIES =====
 function fmt(v) {
-  if (v >= 1e8) return (v/1e8).toFixed(1) + '억';
-  if (v >= 1e4) return (v/1e4).toFixed(0) + '만';
+  if (Math.abs(v) >= 1e8) return (v/1e8).toFixed(1) + '억';
+  if (Math.abs(v) >= 1e4) return (v/1e4).toFixed(0) + '만';
   return v.toLocaleString();
 }
 function fmtFull(v) { return Math.round(v).toLocaleString(); }
@@ -346,40 +380,12 @@ function pct(v) { return (v*100).toFixed(1) + '%'; }
 function rateClass(r) { return r >= 1 ? 'good' : r >= 0.9 ? 'warn' : 'bad'; }
 function fillClass(r) { return r >= 1 ? 'fill-over' : r >= 0.9 ? 'fill-good' : r >= 0.7 ? 'fill-warn' : 'fill-bad'; }
 
-function getFiltered() {
-  const mgr = document.getElementById('filterManager').value;
-  const type = document.getElementById('filterType').value;
-  const month = document.getElementById('filterMonth').value;
-
-  let planF = PLAN.filter(d => {
-    if (mgr !== 'all' && d.manager !== mgr) return false;
-    if (type !== 'all' && d.type !== type) return false;
-    return true;
-  });
-
-  let actualF = ACTUAL.filter(d => {
-    if (mgr !== 'all' && !planF.find(p => p.channel === d.channel && p.group === d.group)) {
-      // also check by manager in actual
-      if (d.manager !== mgr && mgr !== 'all') return false;
-    }
-    if (type !== 'all' && d.type !== type) return false;
-    return true;
-  });
-
-  return { plan: planF, actual: actualF, month };
+function getPrevKey(item) {
+  return item.group + '_' + item.channel;
 }
 
-function sumMonths(arr, monthFilter) {
-  if (monthFilter === 'ytd') {
-    return arr.reduce((s, d) => {
-      let v = 0;
-      for (let i = 0; i < ACTUAL_MONTHS; i++) v += d.months[i];
-      return s + v;
-    }, 0);
-  } else {
-    const m = parseInt(monthFilter);
-    return arr.reduce((s, d) => s + d.months[m], 0);
-  }
+function getPrevMonths(item) {
+  return PREV_YEAR[getPrevKey(item)] || null;
 }
 
 function getPlanForPeriod(d, monthFilter) {
@@ -394,8 +400,53 @@ function getActualForPeriod(d, monthFilter) {
   return getPlanForPeriod(d, monthFilter);
 }
 
+function getPrevForPeriod(months, monthFilter) {
+  if (!months) return null;
+  if (monthFilter === 'ytd') {
+    let v = 0;
+    for (let i = 0; i < ACTUAL_MONTHS; i++) v += months[i];
+    return v;
+  }
+  return months[parseInt(monthFilter)];
+}
+
 function findActual(planItem) {
   return ACTUAL.find(a => a.channel === planItem.channel && a.group === planItem.group);
+}
+
+function getFiltered() {
+  const mgr = document.getElementById('filterManager').value;
+  const type = document.getElementById('filterType').value;
+  const month = document.getElementById('filterMonth').value;
+
+  let planF = PLAN.filter(d => {
+    if (mgr !== 'all' && d.manager !== mgr) return false;
+    if (type !== 'all' && d.type !== type) return false;
+    return true;
+  });
+
+  let actualF = ACTUAL.filter(d => {
+    if (type !== 'all' && d.type !== type) return false;
+    if (mgr !== 'all') {
+      const inPlan = planF.find(p => p.channel === d.channel && p.group === d.group);
+      if (!inPlan && d.manager !== mgr) return false;
+    }
+    return true;
+  });
+
+  return { plan: planF, actual: actualF, month };
+}
+
+function sumMonths(arr, monthFilter) {
+  if (monthFilter === 'ytd') {
+    return arr.reduce((s, d) => {
+      let v = 0;
+      for (let i = 0; i < ACTUAL_MONTHS; i++) v += d.months[i];
+      return s + v;
+    }, 0);
+  }
+  const m = parseInt(monthFilter);
+  return arr.reduce((s, d) => s + d.months[m], 0);
 }
 
 // ===== RENDER =====
@@ -405,13 +456,11 @@ function renderKPI() {
   const { plan, actual, month } = getFiltered();
   const planTotal = sumMonths(plan, month);
 
-  // Calculate actual total matching plan channels
   let actualTotal = 0;
   plan.forEach(p => {
     const a = findActual(p);
     if (a) actualTotal += getPlanForPeriod(a, month);
   });
-  // Add new actuals not in plan (김포, 검단, 압구정)
   ACTUAL.filter(a => !PLAN.find(p => p.channel === a.channel && p.group === a.group)).forEach(a => {
     const mgr = document.getElementById('filterManager').value;
     const type = document.getElementById('filterType').value;
@@ -423,8 +472,23 @@ function renderKPI() {
   const rate = planTotal > 0 ? actualTotal / planTotal : 0;
   const yearPlan = plan.reduce((s, d) => s + d.total, 0);
   const yearRate = yearPlan > 0 ? actualTotal / yearPlan : 0;
-
   const gap = actualTotal - planTotal;
+
+  // YoY calculation
+  let prevTotal = 0;
+  let hasPrev = false;
+  plan.forEach(p => {
+    const pm = getPrevMonths(p);
+    if (pm) {
+      hasPrev = true;
+      prevTotal += getPrevForPeriod(pm, month);
+    }
+  });
+  const yoyRate = (hasPrev && prevTotal > 0) ? (actualTotal / prevTotal - 1) : null;
+
+  const yoyHtml = yoyRate !== null
+    ? `<div class="sub">YoY: <span class="${yoyRate >= 0 ? 'yoy-up' : 'yoy-down'}">${yoyRate >= 0 ? '+' : ''}${pct(yoyRate)}</span> (전년 ${fmt(prevTotal)})</div>`
+    : '';
 
   document.getElementById('kpiRow').innerHTML = `
     <div class="kpi-card">
@@ -436,6 +500,7 @@ function renderKPI() {
       <div class="label">실적</div>
       <div class="value">${fmt(actualTotal)}</div>
       <div class="sub">목표 대비 차이: ${gap >= 0 ? '+' : ''}${fmt(gap)}</div>
+      ${yoyHtml}
     </div>
     <div class="kpi-card">
       <div class="label">기간 달성률</div>
@@ -453,9 +518,10 @@ function renderKPI() {
 function renderCharts() {
   const { plan, actual, month } = getFiltered();
 
-  // 1. Monthly trend
+  // 1. Monthly trend (with 2025 line)
   const monthlyPlan = [];
   const monthlyActual = [];
+  const monthlyPrev = [];
   for (let m = 0; m < 12; m++) {
     monthlyPlan.push(plan.reduce((s, d) => s + d.months[m], 0));
     let act = 0;
@@ -468,6 +534,13 @@ function renderCharts() {
       act += a.months[m];
     });
     monthlyActual.push(m < ACTUAL_MONTHS ? act : null);
+
+    let prev = 0;
+    plan.forEach(p => {
+      const pm = getPrevMonths(p);
+      if (pm) prev += pm[m];
+    });
+    monthlyPrev.push(prev);
   }
 
   if (chartMonthly) chartMonthly.destroy();
@@ -476,12 +549,13 @@ function renderCharts() {
     data: {
       labels: MONTHS,
       datasets: [
-        { label:'목표', data:monthlyPlan, backgroundColor:'rgba(27,94,32,.15)', borderColor:'#2e7d32', borderWidth:2, type:'line', tension:.3, pointRadius:4, order:1 },
-        { label:'실적', data:monthlyActual, backgroundColor:'rgba(76,175,80,.7)', borderRadius:4, order:2 }
+        { label:'2026 목표', data:monthlyPlan, backgroundColor:'rgba(27,94,32,.15)', borderColor:'#2e7d32', borderWidth:2, type:'line', tension:.3, pointRadius:4, order:0 },
+        { label:'2025 실적', data:monthlyPrev, backgroundColor:'rgba(158,158,158,.12)', borderColor:'#9e9e9e', borderWidth:1.5, type:'line', tension:.3, pointRadius:3, borderDash:[5,3], order:1 },
+        { label:'2026 실적', data:monthlyActual, backgroundColor:'rgba(76,175,80,.7)', borderRadius:4, order:2 }
       ]
     },
     options: {
-      responsive:true, plugins:{legend:{position:'top',labels:{font:{size:12}}}},
+      responsive:true, plugins:{legend:{position:'top',labels:{font:{size:11}}}},
       scales:{y:{ticks:{callback:v=>fmt(v)},grid:{color:'#f1f5f9'}},x:{grid:{display:false}}}
     }
   });
@@ -542,7 +616,7 @@ function renderCharts() {
     }
   });
 
-  // 4. Group achievement donut
+  // 4. Group achievement
   const groups = [...new Set(plan.map(d=>d.group))];
   const grpRates = [];
   const grpLabels = [];
@@ -579,6 +653,15 @@ function renderCharts() {
   });
 }
 
+function yoyCell(actualVal, prevVal) {
+  if (prevVal === null || prevVal === undefined) return '<td class="yoy-na">-</td>';
+  if (prevVal === 0 && actualVal === 0) return '<td class="yoy-na">-</td>';
+  if (prevVal === 0) return '<td class="yoy-up">NEW</td>';
+  const yoy = actualVal / prevVal - 1;
+  const cls = yoy >= 0 ? 'yoy-up' : 'yoy-down';
+  return `<td class="${cls}">${yoy >= 0 ? '+' : ''}${pct(yoy)}</td>`;
+}
+
 function renderTable() {
   const { plan, actual, month } = getFiltered();
 
@@ -590,7 +673,9 @@ function renderTable() {
     const yearPlan = p.total;
     const yearActual = a ? a.total : 0;
     const yearRate = yearPlan > 0 ? yearActual / yearPlan : 0;
-    return { ...p, planVal: pv, actualVal: av, rate, yearPlan, yearActual, yearRate };
+    const prevMonths = getPrevMonths(p);
+    const prevVal = getPrevForPeriod(prevMonths, month);
+    return { ...p, planVal: pv, actualVal: av, rate, yearPlan, yearActual, yearRate, prevVal };
   });
 
   const typeBadge = t => t==='온라인'?'badge-online':t==='오프라인'?'badge-offline':'badge-export';
@@ -599,6 +684,7 @@ function renderTable() {
     <thead><tr>
       <th>유형</th><th>구분</th><th>채널</th><th>담당자</th>
       <th>기간 목표</th><th>기간 실적</th><th>달성률</th><th>진척 현황</th>
+      <th>전년 실적</th><th>YoY</th>
       <th>연간 목표</th><th>연간 실적</th><th>연간 진척률</th>
     </tr></thead><tbody>`;
 
@@ -618,6 +704,8 @@ function renderTable() {
           </div>
         </div>
       </td>
+      <td>${r.prevVal !== null ? fmtFull(r.prevVal) : '<span class="yoy-na">-</span>'}</td>
+      ${yoyCell(r.actualVal, r.prevVal)}
       <td>${fmtFull(r.yearPlan)}</td><td>${fmtFull(r.yearActual)}</td>
       <td class="rate ${rateClass(r.yearRate)}"><b>${pct(r.yearRate)}</b></td>
     </tr>`;
@@ -634,14 +722,17 @@ function renderTable() {
     const mgrPlanTotal = mgrRows.reduce((s, r) => s + r.planVal, 0);
     const mgrActualTotal = mgrRows.reduce((s, r) => s + r.actualVal, 0);
     const mgrRate = mgrPlanTotal > 0 ? mgrActualTotal / mgrPlanTotal : 0;
+    const mgrPrevTotal = mgrRows.reduce((s, r) => s + (r.prevVal || 0), 0);
+    const mgrYoy = mgrPrevTotal > 0 ? (mgrActualTotal / mgrPrevTotal - 1) : null;
+    const mgrYoyHtml = mgrYoy !== null ? ` | YoY: <span class="${mgrYoy >= 0 ? 'yoy-up' : 'yoy-down'}">${mgrYoy >= 0 ? '+' : ''}${pct(mgrYoy)}</span>` : '';
 
     mgrHtml += `<div class="manager-section">
       <div class="manager-header">
         <span>${mgr} (${mgrRows.length}개 채널)</span>
-        <span>목표: ${fmt(mgrPlanTotal)} | 실적: ${fmt(mgrActualTotal)} | 달성률: <span class="rate ${rateClass(mgrRate)}">${pct(mgrRate)}</span></span>
+        <span>목표: ${fmt(mgrPlanTotal)} | 실적: ${fmt(mgrActualTotal)} | 달성률: <span class="rate ${rateClass(mgrRate)}">${pct(mgrRate)}</span>${mgrYoyHtml}</span>
       </div>
       <table><thead><tr>
-        <th>구분</th><th>채널</th><th>기간 목표</th><th>기간 실적</th><th>달성률</th><th>진척 현황</th>
+        <th>구분</th><th>채널</th><th>기간 목표</th><th>기간 실적</th><th>달성률</th><th>진척 현황</th><th>전년</th><th>YoY</th>
       </tr></thead><tbody>`;
 
     mgrRows.forEach(r => {
@@ -657,6 +748,8 @@ function renderTable() {
             </div>
           </div>
         </td>
+        <td>${r.prevVal !== null ? fmtFull(r.prevVal) : '<span class="yoy-na">-</span>'}</td>
+        ${yoyCell(r.actualVal, r.prevVal)}
       </tr>`;
     });
     mgrHtml += '</tbody></table></div>';
@@ -680,7 +773,6 @@ const allManagers = [...new Set([...PLAN.map(d=>d.manager), ...ACTUAL.map(d=>d.m
 allManagers.sort();
 const mgrSelect = document.getElementById('filterManager');
 allManagers.forEach(m => { const o = document.createElement('option'); o.value = m; o.textContent = m; mgrSelect.appendChild(o); });
-// Add 공통(배정)
 {const o = document.createElement('option'); o.value='공통(배정)'; o.textContent='공통(배정)'; mgrSelect.appendChild(o);}
 
 // Filter change handlers
