@@ -416,17 +416,16 @@
             {type:"해외",group:"수출",channel:"수출",manager:"김혜리",months:[57838939,22759531,24713172,118204279,96534518,0,148067994,0,0,0,0,0],total:468118433}
         ];
 
-        // 출고기준 실적 (ERP)
-        // 자사몰: 자사몰(합계) 사용 — 키디키디 출고분이 자사몰에 합산됨 (ERP 출고 귀속 기준)
+        // 출고기준 실적 (ERP) — 엑셀 원본 값 그대로
         const SHIPMENT = [
-            {type:"온라인",group:"자사몰",channel:"자사몰",manager:"엄효진/신예지",months:[1796975605,1741991336,1748086416,1963256305,1664899842,1752774511,1888363156,1834245519,0,0,0,0],total:14390592690},
+            {type:"온라인",group:"자사몰",channel:"자사몰",manager:"엄효진/신예지",months:[1795367849,1741160583,1747698216,1963164386,1664731653,1752402774,1876360666,1832618762,0,0,0,0],total:14373504889},
             {type:"온라인",group:"입점몰",channel:"쿠팡",manager:"한승호",months:[83376546,111072335,125563377,129062951,124398724,119390522,174408541,174282962,0,0,0,0],total:1041555958},
             {type:"온라인",group:"입점몰",channel:"네이버",manager:"이보라",months:[260621453,261252388,251604316,275665715,215681105,236386530,290511294,273591675,0,0,0,0],total:2065314476},
             {type:"온라인",group:"입점몰",channel:"보리보리",manager:"이보라",months:[38714020,37685956,15188909,8778974,10659951,22875266,20093447,12130254,0,0,0,0],total:166126777},
             {type:"온라인",group:"입점몰",channel:"현대이지웰",manager:"한승호",months:[1931474,1670621,2033109,3516118,4099640,2531754,2868841,2389490,0,0,0,0],total:21041047},
             {type:"온라인",group:"입점몰",channel:"키즈노트",manager:"이보라",months:[254733,219821,21727,0,0,0,0,0,0,0,0,0],total:496281},
             {type:"온라인",group:"입점몰",channel:"카카오",manager:"한승호",months:[2293245,1379655,896858,810017,321016,310474,352297,535757,0,0,0,0],total:6899319},
-            {type:"온라인",group:"입점몰",channel:"키디키디",manager:"이보라",months:[0,0,0,0,0,0,0,0,0,0,0,0],total:0}, // 출고기준에서는 자사몰에 합산
+            {type:"온라인",group:"입점몰",channel:"키디키디",manager:"이보라",months:[1607756,830753,388200,91919,168189,371737,12002490,1626757,0,0,0,0],total:17087801},
             {type:"온라인",group:"입점몰",channel:"기타매출",manager:"공통(배정)",months:[4311123,4070372,2688971,1788115,522846,486856,259633,276944,0,0,0,0],total:14404860},
             {type:"온라인",group:"입점몰",channel:"신규",manager:"공통(배정)",months:[0,0,0,0,0,0,0,0,0,0,0,0],total:0},
             {type:"오프라인",group:"갤러리아",channel:"광교",manager:"박지윤",months:[62209250,63646722,66450466,66122898,73483839,68508666,75110530,70686666,0,0,0,0],total:546219037},
@@ -1038,30 +1037,19 @@
                 <th class="col-gap">차이(출고-결제)</th><th class="col-gap">차이율</th>
             </tr></thead><tbody>`;
 
-            // 출고기준에서 키디키디 출고분은 자사몰(합계)에 합산됨을 표시
-            const shipNote = '<span style="font-size:10px;color:#1565c0;cursor:help" title="ERP 출고기준에서 키디키디 출고분(월평균 ~200만원)은 자사몰에 합산됨">*자사몰 합산</span>';
-
             rows.sort((a, b) => Math.abs(b.gap) - Math.abs(a.gap));
             rows.forEach(r => {
                 const gapCls = r.gap >= 0 ? 'gap-positive' : 'gap-negative';
-                const isKidi = r.channel === '키디키디';
-                const isMallShip = r.channel === '자사몰' && r.group === '자사몰';
-                const shipDisplay = isKidi ? `0 ${shipNote}` : fmtFull(r.shipVal);
-                const shipRateDisplay = isKidi ? '-' : `<b>${pct(r.shipRate)}</b>`;
-                const shipRateCls = isKidi ? 'yoy-na' : `rate ${rateClass(r.shipRate)}`;
-                const gapDisplay = isKidi ? `${shipNote}` : `${r.gap >= 0 ? '+' : ''}${fmtFull(r.gap)}`;
-                const gapPctDisplay = isKidi ? '-' : `${r.gapPct >= 0 ? '+' : ''}${pct(r.gapPct)}`;
-                const channelLabel = isMallShip ? `<b>${r.channel}</b> <span style="font-size:10px;color:#1565c0" title="키디키디 출고분 포함">*키디키디 포함</span>` : `<b>${r.channel}</b>`;
                 html += `<tr>
                     <td><span class="badge ${typeBadge(r.type)}">${r.type}</span></td>
-                    <td>${r.group}</td><td>${channelLabel}</td><td>${r.manager}</td>
+                    <td>${r.group}</td><td><b>${r.channel}</b></td><td>${r.manager}</td>
                     <td>${fmtFull(r.planVal)}</td>
                     <td class="col-pay">${fmtFull(r.payVal)}</td>
                     <td class="col-pay rate ${rateClass(r.payRate)}"><b>${pct(r.payRate)}</b></td>
-                    <td class="col-ship">${shipDisplay}</td>
-                    <td class="col-ship ${shipRateCls}">${shipRateDisplay}</td>
-                    <td class="col-gap ${isKidi ? '' : gapCls}">${gapDisplay}</td>
-                    <td class="col-gap ${isKidi ? '' : gapCls}">${gapPctDisplay}</td>
+                    <td class="col-ship">${fmtFull(r.shipVal)}</td>
+                    <td class="col-ship rate ${rateClass(r.shipRate)}"><b>${pct(r.shipRate)}</b></td>
+                    <td class="col-gap ${gapCls}">${r.gap >= 0 ? '+' : ''}${fmtFull(r.gap)}</td>
+                    <td class="col-gap ${gapCls}">${r.gapPct >= 0 ? '+' : ''}${pct(r.gapPct)}</td>
                 </tr>`;
             });
             html += '</tbody></table>';
@@ -1092,15 +1080,11 @@
                     </tr></thead><tbody>`;
                 mgrRows.forEach(r => {
                     const gapCls = r.gap >= 0 ? 'gap-positive' : 'gap-negative';
-                    const isKidi = r.channel === '키디키디';
-                    const isMallShip = r.channel === '자사몰' && r.group === '자사몰';
-                    const mgrShipNote = '<span style="font-size:10px;color:#1565c0">*자사몰 합산</span>';
-                    const channelLabel = isMallShip ? `<b>${r.channel}</b> <span style="font-size:10px;color:#1565c0">*키디키디 포함</span>` : `<b>${r.channel}</b>`;
                     mgrHtml += `<tr>
-                        <td>${r.group}</td><td>${channelLabel}</td><td>${fmtFull(r.planVal)}</td>
+                        <td>${r.group}</td><td><b>${r.channel}</b></td><td>${fmtFull(r.planVal)}</td>
                         <td class="col-pay">${fmtFull(r.payVal)}</td><td class="col-pay rate ${rateClass(r.payRate)}"><b>${pct(r.payRate)}</b></td>
-                        <td class="col-ship">${isKidi ? '0 '+mgrShipNote : fmtFull(r.shipVal)}</td><td class="col-ship ${isKidi ? 'yoy-na' : 'rate '+rateClass(r.shipRate)}">${isKidi ? '-' : '<b>'+pct(r.shipRate)+'</b>'}</td>
-                        <td class="col-gap ${isKidi ? '' : gapCls}">${isKidi ? mgrShipNote : (r.gap >= 0 ? '+' : '')+fmtFull(r.gap)}</td>
+                        <td class="col-ship">${fmtFull(r.shipVal)}</td><td class="col-ship rate ${rateClass(r.shipRate)}"><b>${pct(r.shipRate)}</b></td>
+                        <td class="col-gap ${gapCls}">${(r.gap >= 0 ? '+' : '')+fmtFull(r.gap)}</td>
                     </tr>`;
                 });
                 mgrHtml += '</tbody></table></div>';
