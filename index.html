@@ -1038,19 +1038,30 @@
                 <th class="col-gap">차이(출고-결제)</th><th class="col-gap">차이율</th>
             </tr></thead><tbody>`;
 
+            // 출고기준에서 키디키디 출고분은 자사몰(합계)에 합산됨을 표시
+            const shipNote = '<span style="font-size:10px;color:#1565c0;cursor:help" title="ERP 출고기준에서 키디키디 출고분(월평균 ~200만원)은 자사몰에 합산됨">*자사몰 합산</span>';
+
             rows.sort((a, b) => Math.abs(b.gap) - Math.abs(a.gap));
             rows.forEach(r => {
                 const gapCls = r.gap >= 0 ? 'gap-positive' : 'gap-negative';
+                const isKidi = r.channel === '키디키디';
+                const isMallShip = r.channel === '자사몰' && r.group === '자사몰';
+                const shipDisplay = isKidi ? `0 ${shipNote}` : fmtFull(r.shipVal);
+                const shipRateDisplay = isKidi ? '-' : `<b>${pct(r.shipRate)}</b>`;
+                const shipRateCls = isKidi ? 'yoy-na' : `rate ${rateClass(r.shipRate)}`;
+                const gapDisplay = isKidi ? `${shipNote}` : `${r.gap >= 0 ? '+' : ''}${fmtFull(r.gap)}`;
+                const gapPctDisplay = isKidi ? '-' : `${r.gapPct >= 0 ? '+' : ''}${pct(r.gapPct)}`;
+                const channelLabel = isMallShip ? `<b>${r.channel}</b> <span style="font-size:10px;color:#1565c0" title="키디키디 출고분 포함">*키디키디 포함</span>` : `<b>${r.channel}</b>`;
                 html += `<tr>
                     <td><span class="badge ${typeBadge(r.type)}">${r.type}</span></td>
-                    <td>${r.group}</td><td><b>${r.channel}</b></td><td>${r.manager}</td>
+                    <td>${r.group}</td><td>${channelLabel}</td><td>${r.manager}</td>
                     <td>${fmtFull(r.planVal)}</td>
                     <td class="col-pay">${fmtFull(r.payVal)}</td>
                     <td class="col-pay rate ${rateClass(r.payRate)}"><b>${pct(r.payRate)}</b></td>
-                    <td class="col-ship">${fmtFull(r.shipVal)}</td>
-                    <td class="col-ship rate ${rateClass(r.shipRate)}"><b>${pct(r.shipRate)}</b></td>
-                    <td class="col-gap ${gapCls}">${r.gap >= 0 ? '+' : ''}${fmtFull(r.gap)}</td>
-                    <td class="col-gap ${gapCls}">${r.gapPct >= 0 ? '+' : ''}${pct(r.gapPct)}</td>
+                    <td class="col-ship">${shipDisplay}</td>
+                    <td class="col-ship ${shipRateCls}">${shipRateDisplay}</td>
+                    <td class="col-gap ${isKidi ? '' : gapCls}">${gapDisplay}</td>
+                    <td class="col-gap ${isKidi ? '' : gapCls}">${gapPctDisplay}</td>
                 </tr>`;
             });
             html += '</tbody></table>';
@@ -1081,11 +1092,15 @@
                     </tr></thead><tbody>`;
                 mgrRows.forEach(r => {
                     const gapCls = r.gap >= 0 ? 'gap-positive' : 'gap-negative';
+                    const isKidi = r.channel === '키디키디';
+                    const isMallShip = r.channel === '자사몰' && r.group === '자사몰';
+                    const mgrShipNote = '<span style="font-size:10px;color:#1565c0">*자사몰 합산</span>';
+                    const channelLabel = isMallShip ? `<b>${r.channel}</b> <span style="font-size:10px;color:#1565c0">*키디키디 포함</span>` : `<b>${r.channel}</b>`;
                     mgrHtml += `<tr>
-                        <td>${r.group}</td><td><b>${r.channel}</b></td><td>${fmtFull(r.planVal)}</td>
+                        <td>${r.group}</td><td>${channelLabel}</td><td>${fmtFull(r.planVal)}</td>
                         <td class="col-pay">${fmtFull(r.payVal)}</td><td class="col-pay rate ${rateClass(r.payRate)}"><b>${pct(r.payRate)}</b></td>
-                        <td class="col-ship">${fmtFull(r.shipVal)}</td><td class="col-ship rate ${rateClass(r.shipRate)}"><b>${pct(r.shipRate)}</b></td>
-                        <td class="col-gap ${gapCls}">${r.gap >= 0 ? '+' : ''}${fmtFull(r.gap)}</td>
+                        <td class="col-ship">${isKidi ? '0 '+mgrShipNote : fmtFull(r.shipVal)}</td><td class="col-ship ${isKidi ? 'yoy-na' : 'rate '+rateClass(r.shipRate)}">${isKidi ? '-' : '<b>'+pct(r.shipRate)+'</b>'}</td>
+                        <td class="col-gap ${isKidi ? '' : gapCls}">${isKidi ? mgrShipNote : (r.gap >= 0 ? '+' : '')+fmtFull(r.gap)}</td>
                     </tr>`;
                 });
                 mgrHtml += '</tbody></table></div>';
