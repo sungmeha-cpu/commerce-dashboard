@@ -302,6 +302,22 @@
                 </div>
             </div>
 
+            <div class="chart-row" style="grid-template-columns:1fr">
+                <div class="chart-card">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+                        <h3 style="margin:0" id="channelTrendTitle">채널별 월별 매출 추이</h3>
+                        <select id="channelSelect" style="padding:6px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;min-width:160px">
+                            <option value="">-- 채널 선택 --</option>
+                        </select>
+                    </div>
+                    <div id="channelTrendEmpty" style="text-align:center;padding:40px 0;color:var(--text-light);font-size:14px">
+                        위 드롭다운에서 채널을 선택하면 월별 매출 추이를 확인할 수 있습니다.
+                    </div>
+                    <canvas id="chartChannelTrend" style="display:none"></canvas>
+                    <div id="channelTrendTable" style="margin-top:16px"></div>
+                </div>
+            </div>
+
             <div class="table-card">
                 <h3>채널별 상세 현황</h3>
                 <div class="tab-row">
@@ -1193,6 +1209,124 @@
             });
         });
 
+        // ===== CHANNEL TREND =====
+        let chartChannelTrend = null;
+
+        function initChannelSelect() {
+            const sel = document.getElementById('channelSelect');
+            // 기존 옵션 초기화 (첫번째 빈 옵션만 유지)
+            while (sel.options.length > 1) sel.remove(1);
+
+            const groups = {};
+            const allChannels = [...PLAN, ...ACTUAL.filter(a => !PLAN.find(p => p.channel === a.channel && p.group === a.group))];
+            const seen = new Set();
+            allChannels.forEach(d => {
+                const key = d.group + '_' + d.channel;
+                if (seen.has(key)) return;
+                seen.add(key);
+                if (!groups[d.type]) groups[d.type] = [];
+                groups[d.type].push({ group: d.group, channel: d.channel, label: d.group === d.channel ? d.channel : d.group + ' ' + d.channel });
+            });
+
+            ['온라인', '오프라인', '해외', '기타'].forEach(type => {
+                if (!groups[type]) return;
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = type;
+                groups[type].forEach(ch => {
+                    const o = document.createElement('option');
+                    o.value = ch.group + '|||' + ch.channel;
+                    o.textContent = ch.label;
+                    optgroup.appendChild(o);
+                });
+                sel.appendChild(optgroup);
+            });
+        }
+
+        function renderChannelTrend() {
+            const sel = document.getElementById('channelSelect');
+            const val = sel.value;
+            const canvas = document.getElementById('chartChannelTrend');
+            const emptyMsg = document.getElementById('channelTrendEmpty');
+            const tableDiv = document.getElementById('channelTrendTable');
+
+            if (!val) {
+                canvas.style.display = 'none';
+                emptyMsg.style.display = '';
+                tableDiv.innerHTML = '';
+                if (chartChannelTrend) { chartChannelTrend.destroy(); chartChannelTrend = null; }
+                return;
+            }
+
+            const [group, channel] = val.split('|||');
+            canvas.style.display = '';
+            emptyMsg.style.display = 'none';
+
+            const planItem = PLAN.find(p => p.group === group && p.channel === channel);
+            const actualItem = ACTUAL.find(a => a.group === group && a.channel === channel);
+            const shipItem = SHIPMENT.find(a => a.group === group && a.channel === channel);
+            const prevKey = group + '_' + channel;
+            const prevMonths = PREV_YEAR[prevKey] || null;
+
+            const planData = planItem ? planItem.months.map((v, i) => i < ACTUAL_MONTHS ? v : v) : new Array(12).fill(0);
+            const actualData = actualItem ? actualItem.months.map((v, i) => i < ACTUAL_MONTHS ? v : null) : new Array(12).fill(null);
+            const shipData = shipItem ? shipItem.months.map((v, i) => i < ACTUAL_MONTHS ? v : null) : new Array(12).fill(null);
+            const prevData = prevMonths || new Array(12).fill(0);
+
+            const datasets = [
+                { label: '2026 목표', data: planData, borderColor: '#2e7d32', backgroundColor: 'rgba(46,125,50,.08)', borderWidth: 2, type: 'line', tension: 0.3, pointRadius: 4, borderDash: [6, 3], order: 0 },
+                { label: '2026 결제기준', data: actualData, backgroundColor: 'rgba(76,175,80,.7)', borderColor: '#2e7d32', borderWidth: 1, borderRadius: 4, order: 2 },
+                { label: '2026 출고기준', data: shipData, backgroundColor: 'rgba(21,101,192,.5)', borderColor: '#1565c0', borderWidth: 1, borderRadius: 4, order: 3 },
+                { label: '2025 실적', data: prevData, borderColor: '#9e9e9e', backgroundColor: 'rgba(158,158,158,.08)', borderWidth: 1.5, type: 'line', tension: 0.3, pointRadius: 3, borderDash: [4, 4], order: 1 }
+            ];
+
+            if (chartChannelTrend) chartChannelTrend.destroy();
+            chartChannelTrend = new Chart(canvas, {
+                type: 'bar',
+                data: { labels: MONTHS, datasets },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { size: 11 } } },
+                        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + (ctx.raw !== null ? fmtFull(ctx.raw) + '원' : '-') } }
+                    },
+                    scales: {
+                        y: { ticks: { callback: v => fmt(v) }, grid: { color: '#f1f5f9' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // 하단 테이블
+            let html = '<table><thead><tr><th style="text-align:left">월</th><th>목표</th><th>결제기준</th><th>달성률</th><th>출고기준</th><th>전년</th><th>YoY</th></tr></thead><tbody>';
+            for (let i = 0; i < 12; i++) {
+                const plan = planData[i] || 0;
+                const actual = (i < ACTUAL_MONTHS && actualData[i] !== null) ? actualData[i] : null;
+                const ship = (i < ACTUAL_MONTHS && shipData[i] !== null) ? shipData[i] : null;
+                const prev = prevData[i] || 0;
+                const rate = (actual !== null && plan > 0) ? actual / plan : null;
+                const yoy = (actual !== null && prev > 0) ? (actual / prev - 1) : null;
+
+                if (actual === null && plan === 0) continue;
+
+                const rateHtml = rate !== null ? `<span class="rate ${rateClass(rate)}"><b>${pct(rate)}</b></span>` : '-';
+                const yoyHtml = yoy !== null ? `<span class="${yoy >= 0 ? 'yoy-up' : 'yoy-down'}">${yoy >= 0 ? '+' : ''}${pct(yoy)}</span>` : (prev === 0 && actual > 0 ? '<span class="yoy-up">NEW</span>' : '-');
+
+                html += `<tr>
+                    <td style="text-align:left"><b>${MONTHS[i]}</b></td>
+                    <td>${plan > 0 ? fmtFull(plan) : '-'}</td>
+                    <td>${actual !== null ? fmtFull(actual) : '-'}</td>
+                    <td>${rateHtml}</td>
+                    <td>${ship !== null ? fmtFull(ship) : '-'}</td>
+                    <td>${prev > 0 ? fmtFull(prev) : '-'}</td>
+                    <td>${yoyHtml}</td>
+                </tr>`;
+            }
+            html += '</tbody></table>';
+            tableDiv.innerHTML = html;
+        }
+
+        document.getElementById('channelSelect').addEventListener('change', renderChannelTrend);
+
         // Init managers dropdown
         const allManagers = [...new Set([...PLAN.map(d => d.manager), ...ACTUAL.map(d => d.manager)])].filter(m => m && m !== '공통(배정)');
         allManagers.sort();
@@ -1206,6 +1340,7 @@
         });
 
         // Initial render
+        initChannelSelect();
         renderAll();
     </script>
 </body>
