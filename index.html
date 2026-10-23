@@ -302,6 +302,13 @@
                 </div>
             </div>
 
+            <div class="chart-row" id="ebitdaChartRow" style="grid-template-columns:1fr;display:none">
+                <div class="chart-card">
+                    <h3 id="chartEbitdaTitle">채널별 EBITDA</h3>
+                    <canvas id="chartEbitdaCh"></canvas>
+                </div>
+            </div>
+
             <div class="chart-row" style="grid-template-columns:1fr">
                 <div class="chart-card">
                     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
@@ -513,6 +520,52 @@
 
         // EBITDA 월별 데이터 (출고기준 손익)
         const EBITDA_MONTHLY = [541434192,347135394,436965683,804221032,497894220,720366685,540027019,432337878,509450462,0,0,0];
+
+        // 채널별 EBITDA (1~9월)
+        const EBITDA_CH = {
+            "자사몰":[472182290,379448072,430723737,648506889,414507980,564072486,460791042,378258237,421370093],
+            "쿠팡":[12041381,17232723,25153436,38415492,32259649,30919890,37311987,22565789,52197796],
+            "네이버":[43524108,27722990,26838089,61012223,29303465,40180554,9882925,-3448098,-7778478],
+            "보리보리":[8298409,5588064,3182560,2442225,2744416,6538726,4043763,1987529,5984041],
+            "현대이지웰":[276520,125709,416917,1102288,632978,712724,748717,-38599,318825],
+            "키즈노트":[84964,22014,-20760,0,0,0,0,0,0],
+            "카카오":[-1913857,-2300014,-8463,188067,31618,68310,91629,92418,21259],
+            "키디키디":[-23536659,-16995859,-11822326,-10400151,-13448332,-15512104,-14315073,-14152115,-2627280],
+            "기타매출":[1166113,1002549,541876,484359,30670,-4712,-76751,-49796,-67294],
+            "광교":[6208476,-3644455,39383,3520301,-1490059,7891385,-3864473,4792554,1139361],
+            "센터시티":[1914751,857051,1802824,6358946,5801317,7908867,5515184,6459202,6921546],
+            "위례":[50966,-2978438,-11445684,3292335,964482,7261576,1935709,2346033,1351072],
+            "명지":[-655204,-4936753,-3220868,1503892,4882038,7171569,-1338349,2483214,1662389],
+            "수원":[5179490,-338573,3571700,7614417,10248376,12710305,7030462,6427084,4245841],
+            "운정":[2475105,-2098094,-3172264,8100547,2263546,15346707,5607203,8527723,9174080],
+            "본점":[-6805242,-14493166,-962892,-6449602,-8350290,-11661815,-5889608,-5447472,-3577680],
+            "강남":[-892478,-9187426,-5563815,649029,-3710955,1391364,1244463,439577,-2023992],
+            "목동":[1255843,-3745888,604549,2448872,-911368,7449745,607297,2177949,390476],
+            "중동":[1958680,-1441167,-2075113,2595084,544393,6555769,722194,174237,1067580],
+            "관악":[-2125777,751064,378647,219858,-8898,60451,53919,32885,-7823],
+            "노원":[2059680,-3791546,-808373,7150085,4876551,7697132,1909745,7586142,1892004],
+            "대구":[4620397,-1961297,-2926196,7379291,3525191,4807069,-3644474,6218348,2326842],
+            "대전":[-2108449,-5093323,-2502888,-221354,-767418,1394217,-1800038,-439873,-1833373],
+            "동래":[2359371,-1749941,-713473,1781227,2198950,4521045,752383,1681994,2773231],
+            "잠실":[7902647,-6920918,-4320908,9810017,4108551,6416190,3550795,8078594,6139617],
+            "광명":[-1402444,-3379886,-7091533,-2669385,-2172958,-541721,-2997496,1727720,-279061],
+            "기흥":[4102481,838615,-485358,8181026,3485314,8585580,5289104,5000719,6812797],
+            "김포":[0,0,0,-2057011,1850234,1343126,587135,99751,8571],
+            "검단":[0,0,0,-1839072,-5054155,1530893,-385606,505140,1173390],
+            "압구정":[0,0,-269850,252993,422374,782676,472195,157570,-34275],
+            "동탄":[0,0,0,0,0,0,0,-8438614,8783460],
+            "월계":[0,0,0,0,0,0,0,-3463488,914141],
+            "수출":[3236779,-1626681,-67851,4772830,9122329,-5179834,26191033,0,-7824957],
+            "판교":[0,0,0,0,0,0,0,0,-1162758],
+        };
+
+        function getChEbitda(channel, monthFilter) {
+            const data = EBITDA_CH[channel];
+            if (!data) return 0;
+            if (monthFilter === 'ytd') { let v=0; for(let i=0;i<ACTUAL_MONTHS;i++) v+=data[i]; return v; }
+            const m = parseInt(monthFilter);
+            return m < ACTUAL_MONTHS ? (data[m] || 0) : 0;
+        }
 
         // ===== MODE STATE =====
         let currentMode = 'payment'; // 'payment', 'shipment', 'compare'
@@ -1199,11 +1252,75 @@
             else { el.textContent = '비교모드'; el.className = 'mode-indicator mode-indicator-compare'; }
         }
 
+        let chartEbitdaCh;
+        function renderEbitdaChart() {
+            const row = document.getElementById('ebitdaChartRow');
+            if (currentMode !== 'shipment') { row.style.display = 'none'; return; }
+            row.style.display = '';
+
+            const month = document.getElementById('filterMonth').value;
+            const titleEl = document.getElementById('chartEbitdaTitle');
+            titleEl.textContent = month === 'ytd' ? '채널별 EBITDA (YTD)' : `채널별 EBITDA (${MONTHS[parseInt(month)]})`;
+
+            // Get all channels with EBITDA data
+            const channels = [];
+            SHIPMENT.forEach(s => {
+                const key = s.channel;
+                if (EBITDA_CH[key]) {
+                    const ebitda = getChEbitda(key, month);
+                    const revenue = month === 'ytd'
+                        ? s.months.slice(0, ACTUAL_MONTHS).reduce((a,b) => a+b, 0)
+                        : (parseInt(month) < ACTUAL_MONTHS ? s.months[parseInt(month)] : 0);
+                    if (revenue !== 0 || ebitda !== 0) {
+                        channels.push({ name: key, ebitda, revenue, rate: revenue ? (ebitda/revenue*100) : 0 });
+                    }
+                }
+            });
+
+            // Sort by EBITDA descending
+            channels.sort((a,b) => b.ebitda - a.ebitda);
+
+            const labels = channels.map(c => c.name);
+            const ebitdaVals = channels.map(c => c.ebitda);
+            const rateVals = channels.map(c => Math.round(c.rate * 10) / 10);
+            const barColors = ebitdaVals.map(v => v >= 0 ? 'rgba(21,101,192,.7)' : 'rgba(229,57,53,.6)');
+
+            if (chartEbitdaCh) chartEbitdaCh.destroy();
+            chartEbitdaCh = new Chart(document.getElementById('chartEbitdaCh'), {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: 'EBITDA', data: ebitdaVals, backgroundColor: barColors, borderRadius: 3 },
+                    ]
+                },
+                options: {
+                    responsive: true, indexAxis: 'y',
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { size: 11 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    const ch = channels[ctx.dataIndex];
+                                    return [ctx.dataset.label + ': ' + fmtFull(ctx.parsed.x) + '원', 'EBITDA율: ' + ch.rate.toFixed(1) + '%'];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { grid: { display: false }, ticks: { font: { size: 11 } } },
+                        x: { ticks: { callback: v => fmt(v) }, grid: { color: '#f1f5f9' } }
+                    }
+                }
+            });
+        }
+
         function renderAll() {
             updateModeIndicator();
             updateChartTitles();
             renderKPI();
             renderCharts();
+            renderEbitdaChart();
             renderTable();
         }
 
