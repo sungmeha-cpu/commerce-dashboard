@@ -302,12 +302,6 @@
                 </div>
             </div>
 
-            <div class="chart-row" id="ebitdaChartRow" style="grid-template-columns:1fr;display:none">
-                <div class="chart-card">
-                    <h3 id="chartEbitdaTitle">채널별 EBITDA</h3>
-                    <canvas id="chartEbitdaCh"></canvas>
-                </div>
-            </div>
 
             <div class="chart-row" style="grid-template-columns:1fr">
                 <div class="chart-card">
@@ -804,9 +798,22 @@
             const datasets = [];
 
             if (currentMode === 'shipment') {
-                // 출고기준: 매출 바 + EBITDA 라인 + EBITDA율 라인
-                const ebitdaData = EBITDA_MONTHLY.map((v, i) => i < ACTUAL_MONTHS ? v : null);
-                const ebitdaRate = EBITDA_MONTHLY.map((v, i) => i < ACTUAL_MONTHS && monthlyShip[i] ? Math.round(v / monthlyShip[i] * 1000) / 10 : null);
+                // 출고기준: 매출 바 + EBITDA 라인 + EBITDA율 라인 (필터 반영)
+                const filteredChannels = new Set();
+                plan.forEach(p => filteredChannels.add(p.channel));
+                SHIPMENT.filter(a => !PLAN.find(p => p.channel === a.channel && p.group === a.group)).forEach(a => {
+                    if (mgr !== 'all' && a.manager !== mgr) return;
+                    if (tp !== 'all' && a.type !== tp) return;
+                    filteredChannels.add(a.channel);
+                });
+                const ebitdaData = [];
+                for (let m = 0; m < 12; m++) {
+                    if (m >= ACTUAL_MONTHS) { ebitdaData.push(null); continue; }
+                    let sum = 0;
+                    filteredChannels.forEach(ch => { if (EBITDA_CH[ch] && EBITDA_CH[ch][m] !== undefined) sum += EBITDA_CH[ch][m]; });
+                    ebitdaData.push(sum);
+                }
+                const ebitdaRate = ebitdaData.map((v, i) => v !== null && monthlyShip[i] ? Math.round(v / monthlyShip[i] * 1000) / 10 : null);
                 datasets.push(
                     { label: '2026 출고기준', data: monthlyShip, backgroundColor: 'rgba(21,101,192,.7)', borderRadius: 4, order: 2, yAxisID: 'y' },
                     { label: 'EBITDA', data: ebitdaData, borderColor: '#ff6f00', backgroundColor: 'rgba(255,111,0,.1)', borderWidth: 2.5, type: 'line', tension: 0.3, pointRadius: 5, pointBackgroundColor: '#ff6f00', order: 0, yAxisID: 'y' },
@@ -1252,75 +1259,12 @@
             else { el.textContent = '비교모드'; el.className = 'mode-indicator mode-indicator-compare'; }
         }
 
-        let chartEbitdaCh;
-        function renderEbitdaChart() {
-            const row = document.getElementById('ebitdaChartRow');
-            if (currentMode !== 'shipment') { row.style.display = 'none'; return; }
-            row.style.display = '';
-
-            const month = document.getElementById('filterMonth').value;
-            const titleEl = document.getElementById('chartEbitdaTitle');
-            titleEl.textContent = month === 'ytd' ? '채널별 EBITDA (YTD)' : `채널별 EBITDA (${MONTHS[parseInt(month)]})`;
-
-            // Get all channels with EBITDA data
-            const channels = [];
-            SHIPMENT.forEach(s => {
-                const key = s.channel;
-                if (EBITDA_CH[key]) {
-                    const ebitda = getChEbitda(key, month);
-                    const revenue = month === 'ytd'
-                        ? s.months.slice(0, ACTUAL_MONTHS).reduce((a,b) => a+b, 0)
-                        : (parseInt(month) < ACTUAL_MONTHS ? s.months[parseInt(month)] : 0);
-                    if (revenue !== 0 || ebitda !== 0) {
-                        channels.push({ name: key, ebitda, revenue, rate: revenue ? (ebitda/revenue*100) : 0 });
-                    }
-                }
-            });
-
-            // Sort by EBITDA descending
-            channels.sort((a,b) => b.ebitda - a.ebitda);
-
-            const labels = channels.map(c => c.name);
-            const ebitdaVals = channels.map(c => c.ebitda);
-            const rateVals = channels.map(c => Math.round(c.rate * 10) / 10);
-            const barColors = ebitdaVals.map(v => v >= 0 ? 'rgba(21,101,192,.7)' : 'rgba(229,57,53,.6)');
-
-            if (chartEbitdaCh) chartEbitdaCh.destroy();
-            chartEbitdaCh = new Chart(document.getElementById('chartEbitdaCh'), {
-                type: 'bar',
-                data: {
-                    labels,
-                    datasets: [
-                        { label: 'EBITDA', data: ebitdaVals, backgroundColor: barColors, borderRadius: 3 },
-                    ]
-                },
-                options: {
-                    responsive: true, indexAxis: 'y',
-                    plugins: {
-                        legend: { position: 'top', labels: { font: { size: 11 } } },
-                        tooltip: {
-                            callbacks: {
-                                label: function(ctx) {
-                                    const ch = channels[ctx.dataIndex];
-                                    return [ctx.dataset.label + ': ' + fmtFull(ctx.parsed.x) + '원', 'EBITDA율: ' + ch.rate.toFixed(1) + '%'];
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: { grid: { display: false }, ticks: { font: { size: 11 } } },
-                        x: { ticks: { callback: v => fmt(v) }, grid: { color: '#f1f5f9' } }
-                    }
-                }
-            });
-        }
 
         function renderAll() {
             updateModeIndicator();
             updateChartTitles();
             renderKPI();
             renderCharts();
-            renderEbitdaChart();
             renderTable();
         }
 
@@ -1414,11 +1358,32 @@
             const prevData = prevMonths || new Array(12).fill(0);
 
             const datasets = [
-                { label: '2026 목표', data: planData, borderColor: '#2e7d32', backgroundColor: 'rgba(46,125,50,.08)', borderWidth: 2, type: 'line', tension: 0.3, pointRadius: 4, borderDash: [6, 3], order: 0 },
-                { label: '2026 결제기준', data: actualData, backgroundColor: 'rgba(76,175,80,.7)', borderColor: '#2e7d32', borderWidth: 1, borderRadius: 4, order: 2 },
-                { label: '2026 출고기준', data: shipData, backgroundColor: 'rgba(21,101,192,.5)', borderColor: '#1565c0', borderWidth: 1, borderRadius: 4, order: 3 },
-                { label: '2025 실적', data: prevData, borderColor: '#9e9e9e', backgroundColor: 'rgba(158,158,158,.08)', borderWidth: 1.5, type: 'line', tension: 0.3, pointRadius: 3, borderDash: [4, 4], order: 1 }
+                { label: '2026 목표', data: planData, borderColor: '#2e7d32', backgroundColor: 'rgba(46,125,50,.08)', borderWidth: 2, type: 'line', tension: 0.3, pointRadius: 4, borderDash: [6, 3], order: 0, yAxisID: 'y' },
+                { label: '2026 결제기준', data: actualData, backgroundColor: 'rgba(76,175,80,.7)', borderColor: '#2e7d32', borderWidth: 1, borderRadius: 4, order: 2, yAxisID: 'y' },
+                { label: '2026 출고기준', data: shipData, backgroundColor: 'rgba(21,101,192,.5)', borderColor: '#1565c0', borderWidth: 1, borderRadius: 4, order: 3, yAxisID: 'y' },
+                { label: '2025 실적', data: prevData, borderColor: '#9e9e9e', backgroundColor: 'rgba(158,158,158,.08)', borderWidth: 1.5, type: 'line', tension: 0.3, pointRadius: 3, borderDash: [4, 4], order: 1, yAxisID: 'y' }
             ];
+
+            // 채널 EBITDA 데이터 추가
+            const chEbitda = EBITDA_CH[channel];
+            let hasEbitda = false;
+            if (chEbitda) {
+                const ebitdaData = chEbitda.map((v, i) => i < ACTUAL_MONTHS ? v : null).concat(new Array(12 - chEbitda.length).fill(null));
+                const ebitdaRate = ebitdaData.map((v, i) => v !== null && shipData[i] ? Math.round(v / shipData[i] * 1000) / 10 : null);
+                datasets.push(
+                    { label: 'EBITDA', data: ebitdaData, borderColor: '#ff6f00', backgroundColor: 'rgba(255,111,0,.1)', borderWidth: 2.5, type: 'line', tension: 0.3, pointRadius: 5, pointBackgroundColor: '#ff6f00', order: -1, yAxisID: 'y' },
+                    { label: 'EBITDA율 (%)', data: ebitdaRate, borderColor: '#e53935', backgroundColor: 'transparent', borderWidth: 2, type: 'line', tension: 0.3, pointRadius: 4, pointBackgroundColor: '#e53935', borderDash: [5, 3], order: -2, yAxisID: 'y1' }
+                );
+                hasEbitda = true;
+            }
+
+            const scalesOpt = {
+                y: { ticks: { callback: v => fmt(v) }, grid: { color: '#f1f5f9' } },
+                x: { grid: { display: false } }
+            };
+            if (hasEbitda) {
+                scalesOpt.y1 = { position: 'right', ticks: { callback: v => v + '%' }, grid: { display: false }, min: -30, max: 50 };
+            }
 
             if (chartChannelTrend) chartChannelTrend.destroy();
             chartChannelTrend = new Chart(canvas, {
@@ -1428,17 +1393,19 @@
                     responsive: true,
                     plugins: {
                         legend: { position: 'top', labels: { font: { size: 11 } } },
-                        tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + (ctx.raw !== null ? fmtFull(ctx.raw) + '원' : '-') } }
+                        tooltip: { callbacks: { label: ctx => {
+                            if (ctx.dataset.label === 'EBITDA율 (%)') return ctx.dataset.label + ': ' + (ctx.raw !== null ? ctx.raw + '%' : '-');
+                            return ctx.dataset.label + ': ' + (ctx.raw !== null ? fmtFull(ctx.raw) + '원' : '-');
+                        } } }
                     },
-                    scales: {
-                        y: { ticks: { callback: v => fmt(v) }, grid: { color: '#f1f5f9' } },
-                        x: { grid: { display: false } }
-                    }
+                    scales: scalesOpt
                 }
             });
 
             // 하단 테이블
-            let html = '<table><thead><tr><th style="text-align:left">월</th><th>목표</th><th>결제기준</th><th>달성률</th><th>출고기준</th><th>전년</th><th>YoY</th></tr></thead><tbody>';
+            const chEbitdaT = EBITDA_CH[channel];
+            const ebitdaCols = chEbitdaT ? '<th>EBITDA</th><th>EBITDA율</th>' : '';
+            let html = `<table><thead><tr><th style="text-align:left">월</th><th>목표</th><th>결제기준</th><th>달성률</th><th>출고기준</th>${ebitdaCols}<th>전년</th><th>YoY</th></tr></thead><tbody>`;
             for (let i = 0; i < 12; i++) {
                 const plan = planData[i] || 0;
                 const actual = (i < ACTUAL_MONTHS && actualData[i] !== null) ? actualData[i] : null;
@@ -1451,6 +1418,12 @@
 
                 const rateHtml = rate !== null ? `<span class="rate ${rateClass(rate)}"><b>${pct(rate)}</b></span>` : '-';
                 const yoyHtml = yoy !== null ? `<span class="${yoy >= 0 ? 'yoy-up' : 'yoy-down'}">${yoy >= 0 ? '+' : ''}${pct(yoy)}</span>` : (prev === 0 && actual > 0 ? '<span class="yoy-up">NEW</span>' : '-');
+                let ebitdaTds = '';
+                if (chEbitdaT) {
+                    const ev = (i < ACTUAL_MONTHS && chEbitdaT[i] !== undefined) ? chEbitdaT[i] : null;
+                    const er = (ev !== null && ship) ? (ev / ship * 100).toFixed(1) + '%' : '-';
+                    ebitdaTds = `<td>${ev !== null ? fmtFull(ev) : '-'}</td><td>${er}</td>`;
+                }
 
                 html += `<tr>
                     <td style="text-align:left"><b>${MONTHS[i]}</b></td>
@@ -1458,6 +1431,7 @@
                     <td>${actual !== null ? fmtFull(actual) : '-'}</td>
                     <td>${rateHtml}</td>
                     <td>${ship !== null ? fmtFull(ship) : '-'}</td>
+                    ${ebitdaTds}
                     <td>${prev > 0 ? fmtFull(prev) : '-'}</td>
                     <td>${yoyHtml}</td>
                 </tr>`;
