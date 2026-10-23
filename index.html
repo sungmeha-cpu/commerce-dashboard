@@ -511,6 +511,9 @@
         const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
         const ACTUAL_MONTHS = 9;
 
+        // EBITDA 월별 데이터 (출고기준 손익)
+        const EBITDA_MONTHLY = [541434192,347135394,436965683,804221032,497894220,720366685,540027019,432337878,509450462,0,0,0];
+
         // ===== MODE STATE =====
         let currentMode = 'payment'; // 'payment', 'shipment', 'compare'
 
@@ -748,11 +751,14 @@
             const datasets = [];
 
             if (currentMode === 'shipment') {
-                // 출고기준: 목표/2025는 결제기준 수치이므로 제외, 출고 실적만 표시
-                datasets.push({
-                    label: '2026 출고기준', data: monthlyShip,
-                    backgroundColor: 'rgba(21,101,192,.7)', borderRadius: 4, order: 0
-                });
+                // 출고기준: 매출 바 + EBITDA 라인 + EBITDA율 라인
+                const ebitdaData = EBITDA_MONTHLY.map((v, i) => i < ACTUAL_MONTHS ? v : null);
+                const ebitdaRate = EBITDA_MONTHLY.map((v, i) => i < ACTUAL_MONTHS && monthlyShip[i] ? Math.round(v / monthlyShip[i] * 1000) / 10 : null);
+                datasets.push(
+                    { label: '2026 출고기준', data: monthlyShip, backgroundColor: 'rgba(21,101,192,.7)', borderRadius: 4, order: 2, yAxisID: 'y' },
+                    { label: 'EBITDA', data: ebitdaData, borderColor: '#ff6f00', backgroundColor: 'rgba(255,111,0,.1)', borderWidth: 2.5, type: 'line', tension: 0.3, pointRadius: 5, pointBackgroundColor: '#ff6f00', order: 0, yAxisID: 'y' },
+                    { label: 'EBITDA율 (%)', data: ebitdaRate, borderColor: '#e53935', backgroundColor: 'transparent', borderWidth: 2, type: 'line', tension: 0.3, pointRadius: 4, pointBackgroundColor: '#e53935', borderDash: [5, 3], order: 1, yAxisID: 'y1' }
+                );
             } else if (currentMode === 'compare') {
                 datasets.push(
                     { label: '2026 목표 (결제기준)', data: monthlyPlan, backgroundColor: 'rgba(27,94,32,.15)', borderColor: '#2e7d32', borderWidth: 2, type: 'line', tension: 0.3, pointRadius: 4, order: 0 },
@@ -774,10 +780,28 @@
                 data: { labels: MONTHS, datasets },
                 options: {
                     responsive: true,
-                    plugins: { legend: { position: 'top', labels: { font: { size: 11 } } } },
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { size: 11 } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    if (ctx.dataset.yAxisID === 'y1') return ctx.dataset.label + ': ' + ctx.parsed.y + '%';
+                                    return ctx.dataset.label + ': ' + fmtFull(ctx.parsed.y) + '원';
+                                }
+                            }
+                        }
+                    },
                     scales: {
                         y: { ticks: { callback: v => fmt(v) }, grid: { color: '#f1f5f9' } },
-                        x: { grid: { display: false } }
+                        x: { grid: { display: false } },
+                        ...(currentMode === 'shipment' ? {
+                            y1: {
+                                position: 'right', grid: { display: false },
+                                ticks: { callback: v => v + '%', font: { size: 11 }, color: '#e53935' },
+                                min: 0, max: 30,
+                                title: { display: true, text: 'EBITDA율', color: '#e53935', font: { size: 11 } }
+                            }
+                        } : {})
                     }
                 }
             });
