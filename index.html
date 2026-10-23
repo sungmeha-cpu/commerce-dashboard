@@ -858,7 +858,6 @@
                             y1: {
                                 position: 'right', grid: { display: false },
                                 ticks: { callback: v => v + '%', font: { size: 11 }, color: '#e53935' },
-                                min: 0, max: 30,
                                 title: { display: true, text: 'EBITDA율', color: '#e53935', font: { size: 11 } }
                             }
                         } : {})
@@ -1382,7 +1381,7 @@
                 x: { grid: { display: false } }
             };
             if (hasEbitda) {
-                scalesOpt.y1 = { position: 'right', ticks: { callback: v => v + '%' }, grid: { display: false }, min: -30, max: 50 };
+                scalesOpt.y1 = { position: 'right', ticks: { callback: v => v + '%' }, grid: { display: false } };
             }
 
             if (chartChannelTrend) chartChannelTrend.destroy();
