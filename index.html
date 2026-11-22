@@ -228,10 +228,7 @@
     <div id="dashboardContent" class="dashboard-content">
         <div class="header">
             <h1>🌿 2026 커머스실 채널별 매출 대시보드</h1>
-            <div class="date" style="display:flex;align-items:center;gap:12px">
-                <span>사업계획 vs 실적 <span id="modeIndicator" class="mode-indicator mode-indicator-pay">결제기준</span> | 최종 업데이트: 2026.10.12</span>
-                <a href="https://docs.google.com/spreadsheets/d/1SCAFZ-_qLmxvx3S6p9B-2T1cVRw-GtAX/edit?gid=1267463062#gid=1267463062" target="_blank" style="background:rgba(255,255,255,.2);color:#fff;padding:4px 12px;border-radius:6px;font-size:12px;text-decoration:none;font-weight:600;border:1px solid rgba(255,255,255,.3);transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.35)'" onmouseout="this.style.background='rgba(255,255,255,.2)'">📊 공헌이익</a>
-            </div>
+            <div class="date">사업계획 vs 실적 <span id="modeIndicator" class="mode-indicator mode-indicator-pay">결제기준</span> | 최종 업데이트: 2026.11.22</div>
         </div>
 
         <div class="filters">
@@ -245,7 +242,7 @@
             </div>
             <div class="filter-group">
                 <label>실적 반영:</label>
-                <span>1월~9월</span>
+                <span>1월~10월</span>
             </div>
             <div class="filter-group">
                 <label>담당자</label>
@@ -266,7 +263,7 @@
             <div class="filter-group">
                 <label>기준월</label>
                 <select id="filterMonth">
-                    <option value="ytd">YTD (1~9월)</option>
+                    <option value="ytd">YTD (1~10월)</option>
                     <option value="0">1월</option>
                     <option value="1">2월</option>
                     <option value="2">3월</option>
@@ -276,6 +273,7 @@
                     <option value="6">7월</option>
                     <option value="7">8월</option>
                     <option value="8">9월</option>
+                    <option value="9">10월</option>
                 </select>
             </div>
         </div>
@@ -302,23 +300,6 @@
                 <div class="chart-card">
                     <h3 id="chartGroupTitle"></h3>
                     <canvas id="chartGroup"></canvas>
-                </div>
-            </div>
-
-
-            <div class="chart-row" style="grid-template-columns:1fr">
-                <div class="chart-card">
-                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
-                        <h3 style="margin:0" id="channelTrendTitle">채널별 월별 매출 추이</h3>
-                        <select id="channelSelect" style="padding:6px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;min-width:160px">
-                            <option value="">-- 채널 선택 --</option>
-                        </select>
-                    </div>
-                    <div id="channelTrendEmpty" style="text-align:center;padding:40px 0;color:var(--text-light);font-size:14px">
-                        위 드롭다운에서 채널을 선택하면 월별 매출 추이를 확인할 수 있습니다.
-                    </div>
-                    <canvas id="chartChannelTrend" style="display:none"></canvas>
-                    <div id="channelTrendTable" style="margin-top:16px"></div>
                 </div>
             </div>
 
@@ -404,82 +385,82 @@
 
         // 결제기준 실적
         const ACTUAL = [
-            {type:"온라인",group:"자사몰",channel:"자사몰",manager:"엄효진/신예지",months:[1581807068,1506964676,1834118963,1839964215,1710778783,1564070668,1847706960,1647016006,1928578079,0,0,0],total:15461005418},
-            {type:"온라인",group:"입점몰",channel:"쿠팡",manager:"한승호",months:[82517692,112144514,125005779,129036713,124713955,119343320,174492957,173933672,283602551,0,0,0],total:1324791153},
-            {type:"온라인",group:"입점몰",channel:"네이버",manager:"이보라",months:[266937611,239143811,272446944,260905661,235318729,242836941,317865960,287481127,320130796,0,0,0],total:2443067580},
-            {type:"온라인",group:"입점몰",channel:"보리보리",manager:"이보라",months:[35639832,54491339,13869199,7619793,9617311,20358470,17686930,11082527,20044662,0,0,0],total:190410063},
-            {type:"온라인",group:"입점몰",channel:"현대이지웰",manager:"한승호",months:[1461739,1798453,1335237,2001740,4121578,1195060,1207137,3653704,1078562,0,0,0],total:17853210},
-            {type:"온라인",group:"입점몰",channel:"키즈노트",manager:"이보라",months:[325409,88936,108745,0,0,0,0,0,0,0,0,0],total:523090},
-            {type:"온라인",group:"입점몰",channel:"카카오",manager:"한승호",months:[8862060,612230,1634160,953917,195056,373214,168004,499090,464729,0,0,0],total:13762460},
-            {type:"온라인",group:"입점몰",channel:"키디키디",manager:"이보라",months:[143216636,95886787,74624090,65243727,84364545,97998000,85277090,87012272,141257272,0,0,0],total:874880419},
+            {type:"온라인",group:"자사몰",channel:"자사몰",manager:"엄효진/신예지",months:[1581807068,1506964676,1834118963,1839964215,1710778783,1564070668,1847706960,1647016006,2121435887,2042995085,0,0],total:17696858311},
+            {type:"온라인",group:"입점몰",channel:"쿠팡",manager:"한승호",months:[82517692,112144514,125005779,129036713,124713955,119343320,174492957,173933672,311962802,276395731,0,0],total:1629547135},
+            {type:"온라인",group:"입점몰",channel:"네이버",manager:"이보라",months:[266937611,239143811,272446944,260905661,235318729,242836941,317865960,287481127,352143876,295905810,0,0],total:2770986470},
+            {type:"온라인",group:"입점몰",channel:"보리보리",manager:"이보라",months:[35639832,54491339,13869199,7619793,9617311,20358470,17686930,11082527,22049129,17091204,0,0],total:209505734},
+            {type:"온라인",group:"입점몰",channel:"현대이지웰",manager:"한승호",months:[1461739,1798453,1335237,2001740,4121578,1195060,1207137,3653704,1186416,3288729,0,0],total:21249793},
+            {type:"온라인",group:"입점몰",channel:"키즈노트",manager:"이보라",months:[325409,88936,108745,0,0,0,0,0,0,26836,0,0],total:549926},
+            {type:"온라인",group:"입점몰",channel:"카카오",manager:"한승호",months:[8862060,612230,1634160,953917,195056,373214,168004,499090,511202,399645,0,0],total:14208578},
+            {type:"온라인",group:"입점몰",channel:"키디키디",manager:"이보라",months:[143216636,95886787,74624090,65243727,84364545,97998000,85277090,87012272,155383000,138539818,0,0],total:1027545965},
             {type:"온라인",group:"입점몰",channel:"기타매출",manager:"공통(배정)",months:[0,0,0,0,0,0,0,0,0,0,0,0],total:0},
             {type:"온라인",group:"입점몰",channel:"신규",manager:"공통(배정)",months:[0,0,0,0,0,0,0,0,0,0,0,0],total:0},
-            {type:"오프라인",group:"갤러리아",channel:"광교",manager:"박지윤",months:[34073969,55732904,54060311,50075743,66847940,49147651,79488077,40142233,51168289,0,0,0],total:480737117},
-            {type:"오프라인",group:"갤러리아",channel:"센터시티",manager:"박지윤",months:[31861477,40408182,38702444,43619563,45331683,36477991,46486462,38891518,41263663,0,0,0],total:363042983},
-            {type:"오프라인",group:"스타필드",channel:"위례",manager:"박지윤",months:[42644772,56047645,45155136,51102809,61570418,50510181,53940936,46276700,48677636,0,0,0],total:455926233},
-            {type:"오프라인",group:"스타필드",channel:"명지",manager:"박지윤",months:[33095309,46648163,43170327,49197063,45781127,39920518,54692327,40821709,44102927,0,0,0],total:397429470},
-            {type:"오프라인",group:"스타필드",channel:"수원",manager:"박지윤",months:[66270402,82682136,72144518,86355872,83537554,65942790,86182136,78356209,81365481,0,0,0],total:702837098},
-            {type:"오프라인",group:"스타필드",channel:"운정",manager:"박지윤",months:[68361927,76422245,87508554,78754645,105649200,96396100,103181081,106141754,105484890,0,0,0],total:827900396},
-            {type:"오프라인",group:"신세계",channel:"본점",manager:"박지윤",months:[15448794,29389598,28668280,25097704,25639120,20024943,23441229,22704325,25573058,0,0,0],total:215987051},
-            {type:"오프라인",group:"신세계",channel:"강남",manager:"박지윤",months:[27522375,37104386,39479014,35797235,39448140,34243873,33238100,33991220,36501926,0,0,0],total:317326269},
-            {type:"오프라인",group:"현대",channel:"목동",manager:"박지윤",months:[31902591,47361569,42982086,48168118,61500540,45825477,58689158,44915618,47643118,0,0,0],total:428988275},
-            {type:"오프라인",group:"롯데",channel:"중동",manager:"구성은",months:[48681600,58727200,54090680,46363440,60852014,48681612,61871920,54090700,54090680,0,0,0],total:487449846},
+            {type:"오프라인",group:"갤러리아",channel:"광교",manager:"박지윤",months:[34073969,55732904,54060311,50075743,66847940,49147651,79488077,40142233,56285118,52409681,0,0],total:538263627},
+            {type:"오프라인",group:"갤러리아",channel:"센터시티",manager:"박지윤",months:[31861477,40408182,38702444,43619563,45331683,36477991,46486462,38891518,45390029,40130297,0,0],total:407299646},
+            {type:"오프라인",group:"스타필드",channel:"위례",manager:"박지윤",months:[42644772,56047645,45155136,51102809,61570418,50510181,53940936,46276700,53545400,44723336,0,0],total:505517333},
+            {type:"오프라인",group:"스타필드",channel:"명지",manager:"박지윤",months:[33095309,46648163,43170327,49197063,45781127,39920518,54692327,40821709,48513220,45025836,0,0],total:446865599},
+            {type:"오프라인",group:"스타필드",channel:"수원",manager:"박지윤",months:[66270402,82682136,72144518,86355872,83537554,65942790,86182136,78356209,89502030,69339200,0,0],total:780312847},
+            {type:"오프라인",group:"스타필드",channel:"운정",manager:"박지윤",months:[68361927,76422245,87508554,78754645,105649200,96396100,103181081,106141754,116033380,99784400,0,0],total:938233286},
+            {type:"오프라인",group:"신세계",channel:"본점",manager:"박지윤",months:[15448794,29389598,28668280,25097704,25639120,20024943,23441229,22704325,28130364,26315422,0,0],total:244859779},
+            {type:"오프라인",group:"신세계",channel:"강남",manager:"박지윤",months:[27522375,37104386,39479014,35797235,39448140,34243873,33238100,33991220,40152119,43207081,0,0],total:364183543},
+            {type:"오프라인",group:"현대",channel:"목동",manager:"박지윤",months:[31902591,47361569,42982086,48168118,61500540,45825477,58689158,44915618,52407429,49113838,0,0],total:482866424},
+            {type:"오프라인",group:"롯데",channel:"중동",manager:"구성은",months:[48681600,58727200,54090680,46363440,60852014,48681612,61871920,54090700,59499748,57954300,0,0],total:550813214},
             {type:"오프라인",group:"롯데",channel:"관악",manager:"구성은",months:[17950672,0,0,0,0,0,0,0,0,0,0,0],total:17950672},
-            {type:"오프라인",group:"롯데",channel:"노원",manager:"구성은",months:[40827154,56719400,61910472,53526854,66542572,46551563,72958045,53457436,63576454,0,0,0],total:516069950},
-            {type:"오프라인",group:"롯데",channel:"대구",manager:"구성은",months:[67519600,91267018,71654381,77002281,79666381,66734827,108060927,69400854,90837665,0,0,0],total:722143934},
-            {type:"오프라인",group:"롯데",channel:"대전",manager:"구성은",months:[24445390,40891572,32799436,34707863,37516572,29033118,46422900,21931009,25072745,0,0,0],total:292820605},
-            {type:"오프라인",group:"롯데",channel:"동래",manager:"구성은",months:[20844600,30892400,28289100,26800200,32190400,22333500,33748000,26303900,32709600,0,0,0],total:254111700},
-            {type:"오프라인",group:"롯데",channel:"잠실",manager:"구성은",months:[69325118,107972890,104130509,98266836,112914654,113677618,112958272,94993854,111506190,0,0,0],total:925745941},
-            {type:"오프라인",group:"AK",channel:"광명",manager:"구성은",months:[24895827,39674300,39186281,31065663,42945263,29247354,40302772,33411154,34445609,0,0,0],total:315174223},
-            {type:"오프라인",group:"AK",channel:"기흥",manager:"구성은",months:[33595627,47095572,54285572,41748018,53573200,38888518,63504345,38673354,44104736,0,0,0],total:415468942},
-            {type:"오프라인",group:"신규",channel:"김포",manager:"공통(배정)",months:[0,0,0,35964836,0,0,0,0,-335018,0,0,0],total:35629818},
-            {type:"오프라인",group:"신규",channel:"검단",manager:"박지윤",months:[0,0,0,2908418,57626018,37871727,41226927,35325218,36948727,0,0,0],total:211907035},
+            {type:"오프라인",group:"롯데",channel:"노원",manager:"구성은",months:[40827154,56719400,61910472,53526854,66542572,46551563,72958045,53457436,69934100,63774800,0,0],total:586202396},
+            {type:"오프라인",group:"롯데",channel:"대구",manager:"구성은",months:[67519600,91267018,71654381,77002281,79666381,66734827,108060927,69400854,99921432,95651772,0,0],total:826879473},
+            {type:"오프라인",group:"롯데",channel:"대전",manager:"구성은",months:[24445390,40891572,32799436,34707863,37516572,29033118,46422900,21931009,27580020,30802718,0,0],total:326130598},
+            {type:"오프라인",group:"롯데",channel:"동래",manager:"구성은",months:[20844600,30892400,28289100,26800200,32190400,22333500,33748000,26303900,35980560,25220564,0,0],total:282603224},
+            {type:"오프라인",group:"롯데",channel:"잠실",manager:"구성은",months:[69325118,107972890,104130509,98266836,112914654,113677618,112958272,94993854,122656810,110780154,0,0],total:1047676715},
+            {type:"오프라인",group:"AK",channel:"광명",manager:"구성은",months:[24895827,39674300,39186281,31065663,42945263,29247354,40302772,33411154,37890170,31106281,0,0],total:349725065},
+            {type:"오프라인",group:"AK",channel:"기흥",manager:"구성은",months:[33595627,47095572,54285572,41748018,53573200,38888518,63504345,38673354,48515210,44633545,0,0],total:464512961},
+            {type:"오프라인",group:"신규",channel:"김포",manager:"공통(배정)",months:[0,0,0,35964836,0,0,0,0,-368520,0,0,0],total:35596316},
+            {type:"오프라인",group:"신규",channel:"검단",manager:"박지윤",months:[0,0,0,2908418,57626018,37871727,41226927,35325218,40643600,42519609,0,0],total:258121517},
             {type:"오프라인",group:"신규",channel:"압구정",manager:"박지윤",months:[0,0,0,1347577,1704845,1672953,1478923,1032709,0,0,0,0],total:7237007},
-            {type:"오프라인",group:"신규",channel:"동탄",manager:"구성은",months:[0,0,0,0,0,0,0,103030309,78889018,0,0,0],total:181919327},
-            {type:"오프라인",group:"신규",channel:"월계",manager:"박지윤",months:[0,0,0,0,0,0,0,18045000,59597781,0,0,0],total:77642781},
-            {type:"해외",group:"수출",channel:"수출",manager:"김혜리",months:[57838939,22759531,24713172,118204279,96534518,0,148067994,0,30792447,0,0,0],total:498910880},
-            {type:"오프라인",group:"현대",channel:"판교",manager:"박지윤",months:[0,0,0,0,0,0,0,0,104738107,0,0,0],total:104738107},
-            {type:"기타",group:"기타",channel:"기타",manager:"엄효진/신예지",months:[0,0,0,0,0,0,0,0,33022000,0,0,0],total:33022000}
+            {type:"오프라인",group:"신규",channel:"동탄",manager:"구성은",months:[0,0,0,0,0,0,0,103030309,86777920,112043436,0,0],total:301851665},
+            {type:"오프라인",group:"신규",channel:"월계",manager:"박지윤",months:[0,0,0,0,0,0,0,18045000,65557560,43096890,0,0],total:126699450},
+            {type:"해외",group:"수출",channel:"수출",manager:"김혜리",months:[57838939,22759531,24713172,118204279,96534518,0,148067994,0,100729740,0,0,0],total:568848173},
+            {type:"오프라인",group:"현대",channel:"판교",manager:"박지윤",months:[0,0,0,0,0,0,0,0,115211917,71518391,0,0],total:186730308},
+            {type:"기타",group:"기타",channel:"기타",manager:"엄효진/신예지",months:[0,0,0,0,0,0,0,0,36324200,6963727,0,0],total:43287927}
 
         ];
 
         // 출고기준 실적 (ERP) — 엑셀 원본 값 그대로
         const SHIPMENT = [
-            {type:"온라인",group:"자사몰",channel:"자사몰",manager:"엄효진/신예지",months:[1795367849,1741160583,1747698216,1963164386,1664731653,1752402774,1876360666,1832618762,1868866185,0,0,0],total:16242371074},
-            {type:"온라인",group:"입점몰",channel:"쿠팡",manager:"한승호",months:[83376546,111072335,125563377,129062951,124398724,119390522,174408541,174282962,283952224,0,0,0],total:1325508182},
-            {type:"온라인",group:"입점몰",channel:"네이버",manager:"이보라",months:[260621453,261252388,251604316,275665715,215681105,236386530,290511294,273591675,328102055,0,0,0],total:2393416531},
-            {type:"온라인",group:"입점몰",channel:"보리보리",manager:"이보라",months:[38714020,37685956,15188909,8778974,10659951,22875266,20093447,12130254,22633153,0,0,0],total:188759930},
-            {type:"온라인",group:"입점몰",channel:"현대이지웰",manager:"한승호",months:[1931474,1670621,2033109,3516118,4099640,2531754,2868841,2389490,2049330,0,0,0],total:23090377},
+            {type:"온라인",group:"자사몰",channel:"자사몰",manager:"엄효진/신예지",months:[1795367849,1741160583,1747698216,1963164386,1664731653,1752402774,1876360666,1832618762,0,0,0,0],total:14373504889},
+            {type:"온라인",group:"입점몰",channel:"쿠팡",manager:"한승호",months:[83376546,111072335,125563377,129062951,124398724,119390522,174408541,174282962,0,0,0,0],total:1041555958},
+            {type:"온라인",group:"입점몰",channel:"네이버",manager:"이보라",months:[260621453,261252388,251604316,275665715,215681105,236386530,290511294,273591675,0,0,0,0],total:2065314476},
+            {type:"온라인",group:"입점몰",channel:"보리보리",manager:"이보라",months:[38714020,37685956,15188909,8778974,10659951,22875266,20093447,12130254,0,0,0,0],total:166126777},
+            {type:"온라인",group:"입점몰",channel:"현대이지웰",manager:"한승호",months:[1931474,1670621,2033109,3516118,4099640,2531754,2868841,2389490,0,0,0,0],total:21041047},
             {type:"온라인",group:"입점몰",channel:"키즈노트",manager:"이보라",months:[254733,219821,21727,0,0,0,0,0,0,0,0,0],total:496281},
-            {type:"온라인",group:"입점몰",channel:"카카오",manager:"한승호",months:[2293245,1379655,896858,810017,321016,310474,352297,535757,339657,0,0,0],total:7238976},
-            {type:"온라인",group:"입점몰",channel:"키디키디",manager:"이보라",months:[1607756,830753,388200,91919,168189,371737,12002490,1626757,61873227,0,0,0],total:78961028},
-            {type:"온라인",group:"입점몰",channel:"기타매출",manager:"공통(배정)",months:[4311123,4070372,2688971,1788115,522846,486856,259633,276944,21556,0,0,0],total:14426416},
+            {type:"온라인",group:"입점몰",channel:"카카오",manager:"한승호",months:[2293245,1379655,896858,810017,321016,310474,352297,535757,0,0,0,0],total:6899319},
+            {type:"온라인",group:"입점몰",channel:"키디키디",manager:"이보라",months:[1607756,830753,388200,91919,168189,371737,12002490,1626757,0,0,0,0],total:17087801},
+            {type:"온라인",group:"입점몰",channel:"기타매출",manager:"공통(배정)",months:[4311123,4070372,2688971,1788115,522846,486856,259633,276944,0,0,0,0],total:14404860},
             {type:"온라인",group:"입점몰",channel:"신규",manager:"공통(배정)",months:[0,0,0,0,0,0,0,0,0,0,0,0],total:0},
-            {type:"오프라인",group:"갤러리아",channel:"광교",manager:"박지윤",months:[62209250,63646722,66450466,66122898,73483839,68508666,75110530,70686666,62342959,0,0,0],total:608561996},
-            {type:"오프라인",group:"갤러리아",channel:"센터시티",manager:"박지윤",months:[43008991,45378151,48223736,49090867,51028938,44481706,52883644,51102522,49665556,0,0,0],total:434864111},
-            {type:"오프라인",group:"스타필드",channel:"위례",manager:"박지윤",months:[50463366,52149716,51991235,51269843,54213459,54928857,54102452,52915305,48733523,0,0,0],total:470767756},
-            {type:"오프라인",group:"스타필드",channel:"명지",manager:"박지윤",months:[38665651,39226685,41631104,45251765,50125206,43283135,47228059,49232661,44636715,0,0,0],total:399280981},
-            {type:"오프라인",group:"스타필드",channel:"수원",manager:"박지윤",months:[71597610,74588641,80119289,80413817,86308783,76465451,83119860,83015796,78439132,0,0,0],total:714068379},
-            {type:"오프라인",group:"스타필드",channel:"운정",manager:"박지윤",months:[71393115,77613721,80068756,84866765,93662543,98637352,103708550,106594974,102142168,0,0,0],total:818687944},
-            {type:"오프라인",group:"신세계",channel:"본점",manager:"박지윤",months:[19508805,22820060,28411193,29721473,28878825,26036114,28008827,30089476,32323668,0,0,0],total:245798441},
-            {type:"오프라인",group:"신세계",channel:"강남",manager:"박지윤",months:[42948056,43135584,50578906,49760068,47666617,45827611,49120780,50082726,44151432,0,0,0],total:423271780},
-            {type:"오프라인",group:"현대",channel:"목동",manager:"박지윤",months:[47512979,51497356,58696704,57280833,63814998,61201158,68033950,70697237,59870748,0,0,0],total:538605963},
-            {type:"오프라인",group:"롯데",channel:"중동",manager:"구성은",months:[63418977,64441873,65917679,64030364,67148721,62088055,67230696,67783162,62084778,0,0,0],total:584144305},
-            {type:"오프라인",group:"롯데",channel:"관악",manager:"구성은",months:[21190379,3034133,1349024,808133,200860,200860,82060,226926,13200,0,0,0],total:27105575},
-            {type:"오프라인",group:"롯데",channel:"노원",manager:"구성은",months:[48884610,51657986,61158810,59285158,61865731,55173111,61691073,65632321,54813297,0,0,0],total:520162097},
-            {type:"오프라인",group:"롯데",channel:"대구",manager:"구성은",months:[79407390,83234536,78332010,80637636,76364902,63643870,82949861,85466334,78981137,0,0,0],total:709017676},
-            {type:"오프라인",group:"롯데",channel:"대전",manager:"구성은",months:[32399429,35988111,34877955,33389342,34682091,31100260,37590620,31759639,28428791,0,0,0],total:300216238},
-            {type:"오프라인",group:"롯데",channel:"동래",manager:"구성은",months:[35391464,34661990,33800606,33726504,36961988,32958954,35661205,36796383,36064732,0,0,0],total:316023826},
-            {type:"오프라인",group:"롯데",channel:"잠실",manager:"구성은",months:[92784047,91687692,94063773,101798849,104167952,97193729,107425065,109690748,103822893,0,0,0],total:902634748},
-            {type:"오프라인",group:"AK",channel:"광명",manager:"구성은",months:[33210946,34302806,33042415,33636374,39489796,33386147,35674814,41291398,33349178,0,0,0],total:317383874},
-            {type:"오프라인",group:"AK",channel:"기흥",manager:"구성은",months:[42896717,43978787,45035648,48970493,49450638,45885036,51238352,48141774,47761650,0,0,0],total:423359095},
-            {type:"오프라인",group:"신규",channel:"김포",manager:"공통(배정)",months:[0,0,0,29143562,6203424,3824686,1775651,455838,236866,0,0,0],total:41640027},
-            {type:"오프라인",group:"신규",channel:"검단",manager:"박지윤",months:[0,0,0,2505626,45969902,35380118,38288105,38041538,37723261,0,0,0],total:197908550},
-            {type:"오프라인",group:"신규",channel:"압구정",manager:"박지윤",months:[0,0,101183,1759228,1910554,2277585,1927108,963063,-40617,0,0,0],total:8898104},
-            {type:"오프라인",group:"신규",channel:"동탄",manager:"구성은",months:[0,0,0,0,0,0,0,61783106,77632572,0,0,0],total:139415678},
-            {type:"오프라인",group:"신규",channel:"월계",manager:"박지윤",months:[0,0,0,0,0,0,0,14586656,52590383,0,0,0],total:67177039},
-            {type:"해외",group:"수출",channel:"수출",manager:"김혜리",months:[57838939,22759531,24713172,118204279,96534518,0,148067996,0,100729740,0,0,0],total:568848175},
-            {type:"오프라인",group:"현대",channel:"판교",manager:"박지윤",months:[0,0,0,0,0,0,0,0,95013759,0,0,0],total:95013759},
+            {type:"오프라인",group:"갤러리아",channel:"광교",manager:"박지윤",months:[62209250,63646722,66450466,66122898,73483839,68508666,75110530,70686666,0,0,0,0],total:546219037},
+            {type:"오프라인",group:"갤러리아",channel:"센터시티",manager:"박지윤",months:[43008991,45378151,48223736,49090867,51028938,44481706,52883644,51102522,0,0,0,0],total:385198555},
+            {type:"오프라인",group:"스타필드",channel:"위례",manager:"박지윤",months:[50463366,52149716,51991235,51269843,54213459,54928857,54102452,52915305,0,0,0,0],total:422034233},
+            {type:"오프라인",group:"스타필드",channel:"명지",manager:"박지윤",months:[38665651,39226685,41631104,45251765,50125206,43283135,47228059,49232661,0,0,0,0],total:354644266},
+            {type:"오프라인",group:"스타필드",channel:"수원",manager:"박지윤",months:[71597610,74588641,80119289,80413817,86308783,76465451,83119860,83015796,0,0,0,0],total:635629247},
+            {type:"오프라인",group:"스타필드",channel:"운정",manager:"박지윤",months:[71393115,77613721,80068756,84866765,93662543,98637352,103708550,106594974,0,0,0,0],total:716545776},
+            {type:"오프라인",group:"신세계",channel:"본점",manager:"박지윤",months:[19508805,22820060,28411193,29721473,28878825,26036114,28008827,30089476,0,0,0,0],total:213474773},
+            {type:"오프라인",group:"신세계",channel:"강남",manager:"박지윤",months:[42948056,43135584,50578906,49760068,47666617,45827611,49120780,50082726,0,0,0,0],total:379120348},
+            {type:"오프라인",group:"현대",channel:"목동",manager:"박지윤",months:[47512979,51497356,58696704,57280833,63814998,61201158,68033950,70697237,0,0,0,0],total:478735215},
+            {type:"오프라인",group:"롯데",channel:"중동",manager:"구성은",months:[63418977,64441873,65917679,64030364,67148721,62088055,67230696,67783162,0,0,0,0],total:522059527},
+            {type:"오프라인",group:"롯데",channel:"관악",manager:"구성은",months:[21190379,3034133,1349024,808133,200860,200860,82060,226926,0,0,0,0],total:27092375},
+            {type:"오프라인",group:"롯데",channel:"노원",manager:"구성은",months:[48884610,51657986,61158810,59285158,61865731,55173111,61691073,65632321,0,0,0,0],total:465348800},
+            {type:"오프라인",group:"롯데",channel:"대구",manager:"구성은",months:[79407390,83234536,78332010,80637636,76364902,63643870,82949861,85466334,0,0,0,0],total:630036539},
+            {type:"오프라인",group:"롯데",channel:"대전",manager:"구성은",months:[32399429,35988111,34877955,33389342,34682091,31100260,37590620,31759639,0,0,0,0],total:271787447},
+            {type:"오프라인",group:"롯데",channel:"동래",manager:"구성은",months:[35391464,34661990,33800606,33726504,36961988,32958954,35661205,36796383,0,0,0,0],total:279959094},
+            {type:"오프라인",group:"롯데",channel:"잠실",manager:"구성은",months:[92784047,91687692,94063773,101798849,104167952,97193729,107425065,109690748,0,0,0,0],total:798811855},
+            {type:"오프라인",group:"AK",channel:"광명",manager:"구성은",months:[33210946,34302806,33042415,33636374,39489796,33386147,35674814,41291398,0,0,0,0],total:284034696},
+            {type:"오프라인",group:"AK",channel:"기흥",manager:"구성은",months:[42896717,43978787,45035648,48970493,49450638,45885036,51238352,48141774,0,0,0,0],total:375597445},
+            {type:"오프라인",group:"신규",channel:"김포",manager:"공통(배정)",months:[0,0,0,29143562,6203424,3824686,1775651,455838,0,0,0,0],total:41403161},
+            {type:"오프라인",group:"신규",channel:"검단",manager:"박지윤",months:[0,0,0,2505626,45969902,35380118,38288105,38041538,0,0,0,0],total:160185289},
+            {type:"오프라인",group:"신규",channel:"압구정",manager:"박지윤",months:[0,0,101183,1759228,1910554,2277585,1927108,963063,0,0,0,0],total:8938721},
+            {type:"오프라인",group:"신규",channel:"동탄",manager:"구성은",months:[0,0,0,0,0,0,0,61783106,0,0,0,0],total:61783106},
+            {type:"오프라인",group:"신규",channel:"월계",manager:"박지윤",months:[0,0,0,0,0,0,0,14586656,0,0,0,0],total:14586656},
+            {type:"해외",group:"수출",channel:"수출",manager:"김혜리",months:[57838939,22759531,24713172,118204279,96534518,0,148067996,0,0,0,0,0],total:468118435},
+            {type:"오프라인",group:"현대",channel:"판교",manager:"박지윤",months:[0,0,0,0,0,0,0,0,0,0,0,0],total:0},
             {type:"기타",group:"기타",channel:"기타",manager:"엄효진/신예지",months:[0,0,0,0,0,0,0,0,0,0,0,0],total:0}
         ];
 
@@ -513,56 +494,7 @@
         };
 
         const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-        const ACTUAL_MONTHS = 9;
-
-        // EBITDA 월별 데이터 (출고기준 손익)
-        const EBITDA_MONTHLY = [541434192,347135394,436965683,804221032,497894220,720366685,540027019,432337878,509450462,0,0,0];
-
-        // 채널별 EBITDA (1~9월)
-        const EBITDA_CH = {
-            "자사몰":[472182290,379448072,430723737,648506889,414507980,564072486,460791042,378258237,421370093],
-            "쿠팡":[12041381,17232723,25153436,38415492,32259649,30919890,37311987,22565789,52197796],
-            "네이버":[43524108,27722990,26838089,61012223,29303465,40180554,9882925,-3448098,-7778478],
-            "보리보리":[8298409,5588064,3182560,2442225,2744416,6538726,4043763,1987529,5984041],
-            "현대이지웰":[276520,125709,416917,1102288,632978,712724,748717,-38599,318825],
-            "키즈노트":[84964,22014,-20760,0,0,0,0,0,0],
-            "카카오":[-1913857,-2300014,-8463,188067,31618,68310,91629,92418,21259],
-            "키디키디":[-23536659,-16995859,-11822326,-10400151,-13448332,-15512104,-14315073,-14152115,-2627280],
-            "기타매출":[1166113,1002549,541876,484359,30670,-4712,-76751,-49796,-67294],
-            "광교":[6208476,-3644455,39383,3520301,-1490059,7891385,-3864473,4792554,1139361],
-            "센터시티":[1914751,857051,1802824,6358946,5801317,7908867,5515184,6459202,6921546],
-            "위례":[50966,-2978438,-11445684,3292335,964482,7261576,1935709,2346033,1351072],
-            "명지":[-655204,-4936753,-3220868,1503892,4882038,7171569,-1338349,2483214,1662389],
-            "수원":[5179490,-338573,3571700,7614417,10248376,12710305,7030462,6427084,4245841],
-            "운정":[2475105,-2098094,-3172264,8100547,2263546,15346707,5607203,8527723,9174080],
-            "본점":[-6805242,-14493166,-962892,-6449602,-8350290,-11661815,-5889608,-5447472,-3577680],
-            "강남":[-892478,-9187426,-5563815,649029,-3710955,1391364,1244463,439577,-2023992],
-            "목동":[1255843,-3745888,604549,2448872,-911368,7449745,607297,2177949,390476],
-            "중동":[1958680,-1441167,-2075113,2595084,544393,6555769,722194,174237,1067580],
-            "관악":[-2125777,751064,378647,219858,-8898,60451,53919,32885,-7823],
-            "노원":[2059680,-3791546,-808373,7150085,4876551,7697132,1909745,7586142,1892004],
-            "대구":[4620397,-1961297,-2926196,7379291,3525191,4807069,-3644474,6218348,2326842],
-            "대전":[-2108449,-5093323,-2502888,-221354,-767418,1394217,-1800038,-439873,-1833373],
-            "동래":[2359371,-1749941,-713473,1781227,2198950,4521045,752383,1681994,2773231],
-            "잠실":[7902647,-6920918,-4320908,9810017,4108551,6416190,3550795,8078594,6139617],
-            "광명":[-1402444,-3379886,-7091533,-2669385,-2172958,-541721,-2997496,1727720,-279061],
-            "기흥":[4102481,838615,-485358,8181026,3485314,8585580,5289104,5000719,6812797],
-            "김포":[0,0,0,-2057011,1850234,1343126,587135,99751,8571],
-            "검단":[0,0,0,-1839072,-5054155,1530893,-385606,505140,1173390],
-            "압구정":[0,0,-269850,252993,422374,782676,472195,157570,-34275],
-            "동탄":[0,0,0,0,0,0,0,-8438614,8783460],
-            "월계":[0,0,0,0,0,0,0,-3463488,914141],
-            "수출":[3236779,-1626681,-67851,4772830,9122329,-5179834,26191033,0,-7824957],
-            "판교":[0,0,0,0,0,0,0,0,-1162758],
-        };
-
-        function getChEbitda(channel, monthFilter) {
-            const data = EBITDA_CH[channel];
-            if (!data) return 0;
-            if (monthFilter === 'ytd') { let v=0; for(let i=0;i<ACTUAL_MONTHS;i++) v+=data[i]; return v; }
-            const m = parseInt(monthFilter);
-            return m < ACTUAL_MONTHS ? (data[m] || 0) : 0;
-        }
+        const ACTUAL_MONTHS = 10;
 
         // ===== MODE STATE =====
         let currentMode = 'payment'; // 'payment', 'shipment', 'compare'
@@ -801,27 +733,11 @@
             const datasets = [];
 
             if (currentMode === 'shipment') {
-                // 출고기준: 매출 바 + EBITDA 라인 + EBITDA율 라인 (필터 반영)
-                const filteredChannels = new Set();
-                plan.forEach(p => filteredChannels.add(p.channel));
-                SHIPMENT.filter(a => !PLAN.find(p => p.channel === a.channel && p.group === a.group)).forEach(a => {
-                    if (mgr !== 'all' && a.manager !== mgr) return;
-                    if (tp !== 'all' && a.type !== tp) return;
-                    filteredChannels.add(a.channel);
+                // 출고기준: 목표/2025는 결제기준 수치이므로 제외, 출고 실적만 표시
+                datasets.push({
+                    label: '2026 출고기준', data: monthlyShip,
+                    backgroundColor: 'rgba(21,101,192,.7)', borderRadius: 4, order: 0
                 });
-                const ebitdaData = [];
-                for (let m = 0; m < 12; m++) {
-                    if (m >= ACTUAL_MONTHS) { ebitdaData.push(null); continue; }
-                    let sum = 0;
-                    filteredChannels.forEach(ch => { if (EBITDA_CH[ch] && EBITDA_CH[ch][m] !== undefined) sum += EBITDA_CH[ch][m]; });
-                    ebitdaData.push(sum);
-                }
-                const ebitdaRate = ebitdaData.map((v, i) => v !== null && monthlyShip[i] ? Math.round(v / monthlyShip[i] * 1000) / 10 : null);
-                datasets.push(
-                    { label: '2026 출고기준', data: monthlyShip, backgroundColor: 'rgba(21,101,192,.7)', borderRadius: 4, order: 2, yAxisID: 'y' },
-                    { label: 'EBITDA', data: ebitdaData, borderColor: '#ff6f00', backgroundColor: 'rgba(255,111,0,.1)', borderWidth: 2.5, type: 'line', tension: 0.3, pointRadius: 5, pointBackgroundColor: '#ff6f00', order: 0, yAxisID: 'y' },
-                    { label: 'EBITDA율 (%)', data: ebitdaRate, borderColor: '#e53935', backgroundColor: 'transparent', borderWidth: 2, type: 'line', tension: 0.3, pointRadius: 4, pointBackgroundColor: '#e53935', borderDash: [5, 3], order: 1, yAxisID: 'y1' }
-                );
             } else if (currentMode === 'compare') {
                 datasets.push(
                     { label: '2026 목표 (결제기준)', data: monthlyPlan, backgroundColor: 'rgba(27,94,32,.15)', borderColor: '#2e7d32', borderWidth: 2, type: 'line', tension: 0.3, pointRadius: 4, order: 0 },
@@ -843,27 +759,10 @@
                 data: { labels: MONTHS, datasets },
                 options: {
                     responsive: true,
-                    plugins: {
-                        legend: { position: 'top', labels: { font: { size: 11 } } },
-                        tooltip: {
-                            callbacks: {
-                                label: function(ctx) {
-                                    if (ctx.dataset.yAxisID === 'y1') return ctx.dataset.label + ': ' + ctx.parsed.y + '%';
-                                    return ctx.dataset.label + ': ' + fmtFull(ctx.parsed.y) + '원';
-                                }
-                            }
-                        }
-                    },
+                    plugins: { legend: { position: 'top', labels: { font: { size: 11 } } } },
                     scales: {
                         y: { ticks: { callback: v => fmt(v) }, grid: { color: '#f1f5f9' } },
-                        x: { grid: { display: false } },
-                        ...(currentMode === 'shipment' ? {
-                            y1: {
-                                position: 'right', grid: { display: false },
-                                ticks: { callback: v => v + '%', font: { size: 11 }, color: '#e53935' },
-                                title: { display: true, text: 'EBITDA율', color: '#e53935', font: { size: 11 } }
-                            }
-                        } : {})
+                        x: { grid: { display: false } }
                     }
                 }
             });
@@ -1261,7 +1160,6 @@
             else { el.textContent = '비교모드'; el.className = 'mode-indicator mode-indicator-compare'; }
         }
 
-
         function renderAll() {
             updateModeIndicator();
             updateChartTitles();
@@ -1296,154 +1194,6 @@
             });
         });
 
-        // ===== CHANNEL TREND =====
-        let chartChannelTrend = null;
-
-        function initChannelSelect() {
-            const sel = document.getElementById('channelSelect');
-            // 기존 옵션 초기화 (첫번째 빈 옵션만 유지)
-            while (sel.options.length > 1) sel.remove(1);
-
-            const groups = {};
-            const allChannels = [...PLAN, ...ACTUAL.filter(a => !PLAN.find(p => p.channel === a.channel && p.group === a.group))];
-            const seen = new Set();
-            allChannels.forEach(d => {
-                const key = d.group + '_' + d.channel;
-                if (seen.has(key)) return;
-                seen.add(key);
-                if (!groups[d.type]) groups[d.type] = [];
-                groups[d.type].push({ group: d.group, channel: d.channel, label: d.group === d.channel ? d.channel : d.group + ' ' + d.channel });
-            });
-
-            ['온라인', '오프라인', '해외', '기타'].forEach(type => {
-                if (!groups[type]) return;
-                const optgroup = document.createElement('optgroup');
-                optgroup.label = type;
-                groups[type].forEach(ch => {
-                    const o = document.createElement('option');
-                    o.value = ch.group + '|||' + ch.channel;
-                    o.textContent = ch.label;
-                    optgroup.appendChild(o);
-                });
-                sel.appendChild(optgroup);
-            });
-        }
-
-        function renderChannelTrend() {
-            const sel = document.getElementById('channelSelect');
-            const val = sel.value;
-            const canvas = document.getElementById('chartChannelTrend');
-            const emptyMsg = document.getElementById('channelTrendEmpty');
-            const tableDiv = document.getElementById('channelTrendTable');
-
-            if (!val) {
-                canvas.style.display = 'none';
-                emptyMsg.style.display = '';
-                tableDiv.innerHTML = '';
-                if (chartChannelTrend) { chartChannelTrend.destroy(); chartChannelTrend = null; }
-                return;
-            }
-
-            const [group, channel] = val.split('|||');
-            canvas.style.display = '';
-            emptyMsg.style.display = 'none';
-
-            const planItem = PLAN.find(p => p.group === group && p.channel === channel);
-            const actualItem = ACTUAL.find(a => a.group === group && a.channel === channel);
-            const shipItem = SHIPMENT.find(a => a.group === group && a.channel === channel);
-            const prevKey = group + '_' + channel;
-            const prevMonths = PREV_YEAR[prevKey] || null;
-
-            const planData = planItem ? planItem.months.map((v, i) => i < ACTUAL_MONTHS ? v : v) : new Array(12).fill(0);
-            const actualData = actualItem ? actualItem.months.map((v, i) => i < ACTUAL_MONTHS ? v : null) : new Array(12).fill(null);
-            const shipData = shipItem ? shipItem.months.map((v, i) => i < ACTUAL_MONTHS ? v : null) : new Array(12).fill(null);
-            const prevData = prevMonths || new Array(12).fill(0);
-
-            const datasets = [
-                { label: '2026 목표', data: planData, borderColor: '#2e7d32', backgroundColor: 'rgba(46,125,50,.08)', borderWidth: 2, type: 'line', tension: 0.3, pointRadius: 4, borderDash: [6, 3], order: 0, yAxisID: 'y' },
-                { label: '2026 결제기준', data: actualData, backgroundColor: 'rgba(76,175,80,.7)', borderColor: '#2e7d32', borderWidth: 1, borderRadius: 4, order: 2, yAxisID: 'y' },
-                { label: '2026 출고기준', data: shipData, backgroundColor: 'rgba(21,101,192,.5)', borderColor: '#1565c0', borderWidth: 1, borderRadius: 4, order: 3, yAxisID: 'y' },
-                { label: '2025 실적', data: prevData, borderColor: '#9e9e9e', backgroundColor: 'rgba(158,158,158,.08)', borderWidth: 1.5, type: 'line', tension: 0.3, pointRadius: 3, borderDash: [4, 4], order: 1, yAxisID: 'y' }
-            ];
-
-            // 채널 EBITDA 데이터 추가
-            const chEbitda = EBITDA_CH[channel];
-            let hasEbitda = false;
-            if (chEbitda) {
-                const ebitdaData = chEbitda.map((v, i) => i < ACTUAL_MONTHS ? v : null).concat(new Array(12 - chEbitda.length).fill(null));
-                const ebitdaRate = ebitdaData.map((v, i) => v !== null && shipData[i] ? Math.round(v / shipData[i] * 1000) / 10 : null);
-                datasets.push(
-                    { label: 'EBITDA', data: ebitdaData, borderColor: '#ff6f00', backgroundColor: 'rgba(255,111,0,.1)', borderWidth: 2.5, type: 'line', tension: 0.3, pointRadius: 5, pointBackgroundColor: '#ff6f00', order: -1, yAxisID: 'y' },
-                    { label: 'EBITDA율 (%)', data: ebitdaRate, borderColor: '#e53935', backgroundColor: 'transparent', borderWidth: 2, type: 'line', tension: 0.3, pointRadius: 4, pointBackgroundColor: '#e53935', borderDash: [5, 3], order: -2, yAxisID: 'y1' }
-                );
-                hasEbitda = true;
-            }
-
-            const scalesOpt = {
-                y: { ticks: { callback: v => fmt(v) }, grid: { color: '#f1f5f9' } },
-                x: { grid: { display: false } }
-            };
-            if (hasEbitda) {
-                scalesOpt.y1 = { position: 'right', ticks: { callback: v => v + '%' }, grid: { display: false } };
-            }
-
-            if (chartChannelTrend) chartChannelTrend.destroy();
-            chartChannelTrend = new Chart(canvas, {
-                type: 'bar',
-                data: { labels: MONTHS, datasets },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'top', labels: { font: { size: 11 } } },
-                        tooltip: { callbacks: { label: ctx => {
-                            if (ctx.dataset.label === 'EBITDA율 (%)') return ctx.dataset.label + ': ' + (ctx.raw !== null ? ctx.raw + '%' : '-');
-                            return ctx.dataset.label + ': ' + (ctx.raw !== null ? fmtFull(ctx.raw) + '원' : '-');
-                        } } }
-                    },
-                    scales: scalesOpt
-                }
-            });
-
-            // 하단 테이블
-            const chEbitdaT = EBITDA_CH[channel];
-            const ebitdaCols = chEbitdaT ? '<th>EBITDA</th><th>EBITDA율</th>' : '';
-            let html = `<table><thead><tr><th style="text-align:left">월</th><th>목표</th><th>결제기준</th><th>달성률</th><th>출고기준</th>${ebitdaCols}<th>전년</th><th>YoY</th></tr></thead><tbody>`;
-            for (let i = 0; i < 12; i++) {
-                const plan = planData[i] || 0;
-                const actual = (i < ACTUAL_MONTHS && actualData[i] !== null) ? actualData[i] : null;
-                const ship = (i < ACTUAL_MONTHS && shipData[i] !== null) ? shipData[i] : null;
-                const prev = prevData[i] || 0;
-                const rate = (actual !== null && plan > 0) ? actual / plan : null;
-                const yoy = (actual !== null && prev > 0) ? (actual / prev - 1) : null;
-
-                if (actual === null && plan === 0) continue;
-
-                const rateHtml = rate !== null ? `<span class="rate ${rateClass(rate)}"><b>${pct(rate)}</b></span>` : '-';
-                const yoyHtml = yoy !== null ? `<span class="${yoy >= 0 ? 'yoy-up' : 'yoy-down'}">${yoy >= 0 ? '+' : ''}${pct(yoy)}</span>` : (prev === 0 && actual > 0 ? '<span class="yoy-up">NEW</span>' : '-');
-                let ebitdaTds = '';
-                if (chEbitdaT) {
-                    const ev = (i < ACTUAL_MONTHS && chEbitdaT[i] !== undefined) ? chEbitdaT[i] : null;
-                    const er = (ev !== null && ship) ? (ev / ship * 100).toFixed(1) + '%' : '-';
-                    ebitdaTds = `<td>${ev !== null ? fmtFull(ev) : '-'}</td><td>${er}</td>`;
-                }
-
-                html += `<tr>
-                    <td style="text-align:left"><b>${MONTHS[i]}</b></td>
-                    <td>${plan > 0 ? fmtFull(plan) : '-'}</td>
-                    <td>${actual !== null ? fmtFull(actual) : '-'}</td>
-                    <td>${rateHtml}</td>
-                    <td>${ship !== null ? fmtFull(ship) : '-'}</td>
-                    ${ebitdaTds}
-                    <td>${prev > 0 ? fmtFull(prev) : '-'}</td>
-                    <td>${yoyHtml}</td>
-                </tr>`;
-            }
-            html += '</tbody></table>';
-            tableDiv.innerHTML = html;
-        }
-
-        document.getElementById('channelSelect').addEventListener('change', renderChannelTrend);
-
         // Init managers dropdown
         const allManagers = [...new Set([...PLAN.map(d => d.manager), ...ACTUAL.map(d => d.manager)])].filter(m => m && m !== '공통(배정)');
         allManagers.sort();
@@ -1457,7 +1207,6 @@
         });
 
         // Initial render
-        initChannelSelect();
         renderAll();
     </script>
 </body>
